@@ -43,9 +43,10 @@ var Player = function() {
 	this.setup('Player', {});
 	this.x = 325;
 	this.y = 90;
+	teclaPulsada = false;
 	this.step = function(){
-		if(Game.keys['arriba']) {
-			teclaLibre = false;
+		if(Game.keys['arriba'] && !teclaPulsada) {
+			teclaPulsada = true;
 			if(this.x === 325 && this.y === 90){
 	    		this.x = 421;
 	    		this.y = 377;
@@ -63,9 +64,9 @@ var Player = function() {
 	    		this.y = 281;
 	    	}
 		}
-		if(Game.keys['abajo']) {
-			teclaLibre = false;
-				if(this.x === 325 && this.y === 90){
+		if(Game.keys['abajo'] && !teclaPulsada) {
+			teclaPulsada = true;
+			if(this.x === 325 && this.y === 90){
 	    		this.x = 357;
 	    		this.y = 185;
 	    	}
@@ -82,6 +83,8 @@ var Player = function() {
 	    		this.y = 90;
 	    	}
 		}
+		if(!Game.keys['abajo'] && !Game.keys['arriba'])
+			teclaPulsada = false;
 	};
 };
 Player.prototype = new Sprite();
