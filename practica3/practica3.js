@@ -271,7 +271,7 @@ window.addEventListener("load", function() {
 	
 	//LEVEL 1
 	Q.scene("level1", function(stage) {
-		Q.stageTMX("smb_level1.tmx",stage);
+		Q.stageTMX("level1.tmx",stage);
 		var mario = stage.insert(new Q.Mario({x: 102, y: 816}));
 		var koopa = stage.insert(new Q.Koopa({x: 748, y: 849}));
 		var piranha = stage.insert(new Q.Piranha({x: 986, y: 700}));
@@ -413,7 +413,7 @@ window.addEventListener("load", function() {
 
 	//CARGA INICIO
 	function initGame() {
-		Q.loadTMX("smb_level1.tmx", function() {
+		Q.loadTMX("level1.tmx", function() {
 			Q.clearStages();
 			Q.stageScene("level1");
 			Q.stageScene("score", 2);
