@@ -17,12 +17,13 @@ window.addEventListener("load", function() {
 	.touch()
 	.enableSound();
 		
-	Q.load(["mario_small.png","mario_small.json", "goomba.png", "goomba.json", "bloopa.png", "bloopa.json", "piranha.png", "piranha.json", "koopa.png", "koopa.json", "princess.png", "coin.png", "coin.json", "lives.png", "music_main.ogg", "music_die.ogg", "music_level_complete.ogg", "music_game over.ogg", "coin.ogg", "jump.ogg", "kick.ogg", "bump.ogg"], function(){
+	Q.load(["mario_small.png","mario_small.json", "goomba.png", "goomba.json", "bloopa.png", "bloopa.json", "piranha.png", "piranha.json", "koopa.png", "koopa.json", "princess.png", "coin.png", "coin.json","coinbox.png", "coinbox.json", "lives.png", "music_main.ogg", "music_die.ogg", "music_level_complete.ogg", "music_game over.ogg", "coin.ogg", "jump.ogg", "kick.ogg", "bump.ogg"], function(){
 		Q.compileSheets("mario_small.png","mario_small.json");
 		Q.compileSheets("goomba.png", "goomba.json");
 		Q.compileSheets("bloopa.png", "bloopa.json");
 		Q.compileSheets("piranha.png","piranha.json");
 		Q.compileSheets("coin.png","coin.json");
+		Q.compileSheets("coinbox.png","coinbox.json");
 		Q.compileSheets("koopa.png","koopa.json");
 		Q.stageScene("level1");
 	});
@@ -38,7 +39,7 @@ window.addEventListener("load", function() {
 			});
 			this.add('2d, platformerControls, animation');
 			this.on("bump.top", function(collision) {
-				if(collision.obj.className != "Coin"){
+				if(collision.obj.className != "Coin" && collision.obj.className != "CoinBox"){
 					Q.audio.play("bump.ogg")
 				}
 			});
@@ -250,7 +251,6 @@ window.addEventListener("load", function() {
 			this.on("bump.left, bump.right, bump.top, bump.bottom", function(collision) {
 				if(collision.obj.isA("Mario")) {
 					Q.audio.play("coin.ogg");
-					this.p.collisionMask = 0;
 					this.del('2d');
 					this.destroy();
 					Q.state.inc("coins", 1);
@@ -267,31 +267,78 @@ window.addEventListener("load", function() {
 	});
 	
 	
+	//COINBOX
+	Q.Sprite.extend("CoinBox",{
+		init: function(p){
+			this._super(p, {
+				sheet: 'coinbox',
+				sprite: "CoinBoxAnimation",
+				gravity: 0
+			});
+			this.add('2d, aiBounce, animation');
+			this.play('shine');
+			
+			this.on("bump.bottom", function(collision) {
+				if(collision.obj.isA("Mario")) {
+					Q.audio.play("coin.ogg");
+					this.del('2d');
+					Q.state.inc("coins", 1);
+					Q.state.inc("score", 200);
+					this.play('used');
+				}
+			});
+		}
+		
+	});
+	//ANIMACION COINBOX
+	Q.animations("CoinBoxAnimation", {
+		shine: { frames: [0, 1, 2], rate: 1/2 },
+		used: { frames: [3], rate: 1 }
+	});
+
+	
 	//ESCENAS
 	
 	//LEVEL 1
 	Q.scene("level1", function(stage) {
 		Q.stageTMX("level1.tmx",stage);
-		var mario = stage.insert(new Q.Mario({x: 102, y: 816}));
+		var mario = stage.insert(new Q.Mario({x: 102, y: 849}));
 		var koopa = stage.insert(new Q.Koopa({x: 748, y: 849}));
+		var koopa2 = stage.insert(new Q.Koopa({x: 1428, y: 849}));
+		var koopa3 = stage.insert(new Q.Koopa({x: 5814, y: 849}));
 		var piranha = stage.insert(new Q.Piranha({x: 986, y: 700}));
+		var piranha2 = stage.insert(new Q.Piranha({x: 5474, y: 700}));
 		var bloopa = stage.insert(new Q.Bloopa({x: 1088, y: 849}));
 		var bloopa2 = stage.insert(new Q.Bloopa({x: 1190, y: 849}));
-		var koopa2 = stage.insert(new Q.Koopa({x: 1428, y: 849}));
+		var bloopa3 = stage.insert(new Q.Bloopa({x: 5355, y: 849}));
 		var goomba = stage.insert(new Q.Goomba({x: 1600, y: 849}));
+		var goomba2 = stage.insert(new Q.Goomba({x: 1634, y: 849}));
+		var goomba3 = stage.insert(new Q.Goomba({x: 4862, y: 849}));
 		var princess = stage.insert(new Q.Princess({x: 6732, y: 800}));
-		var coin = stage.insert(new Q.Coin({x: 272, y: 697}));
-		var coin2 = stage.insert(new Q.Coin({x: 986, y: 595}));
-		var coin3 = stage.insert(new Q.Coin({x: 1428, y: 595}));
-		var coin4 = stage.insert(new Q.Coin({x: 4097, y: 439}));
-		var coin4 = stage.insert(new Q.Coin({x: 4352, y: 439}));
-		var piranha2 = stage.insert(new Q.Piranha({x: 5508, y: 700}));
+		
+		var coins = [[8,20],[28, 17],[41,17],[116,15],[124,15]];
+		for(c in coins) {
+			var coin = stage.insert(new Q.Coin(coinsToMap(coins[c])));
+		}
+		var coinBoxes = [[16,21],[22,17],[21,21],[23,21],[63,21],[77,21],[92,17],[99,21],[104,21],[107,21],[110,21],[107,17],[167,21]]
+		for(c in coinBoxes){
+			var coinBox = stage.insert(new Q.CoinBox(coinboxesToMap(coinBoxes[c])));
+		}
 		Q.audio.play("music_main.ogg", { loop: true});
-		stage.add("viewport").follow(mario);
+		stage.add("viewport").follow(mario,{ x: true, y: false });
+		a = stage.viewport;
+		stage.centerOn(102,675);
 		stage.viewport.offsetX = -50;
-		stage.viewport.offsetY = 170;
+		stage.viewport.offsetY = 0;
 	});
 	
+	function coinsToMap([a, b]) {
+		return {x: + a*35 + 8.5, y: b*34+17};
+	}
+	
+	function coinboxesToMap([a, b]) {
+		return {x: + a*34+17, y: b*34+18};
+	}
 	//MUERTE
 	Q.scene("muerte", function(stage) {
 		Q.audio.stop('music_main.ogg');
@@ -421,7 +468,8 @@ window.addEventListener("load", function() {
 			Q.stageScene("lives", 4);
 		});
 	}
-	
+
 	Q.state.reset({ lives: 3, score: 0, coins:0});
 	initGame();
 });
+

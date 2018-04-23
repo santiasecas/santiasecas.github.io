@@ -1,0 +1,4 @@
+{
+	"coinbox":{"sx":0,"sy":0,"tileW":34,"tileH":35,"frames":3},
+	"coinboxUsed":{"sx":102,"sy":0,"tileW":34,"tileH":35,"frames":1}
+}
