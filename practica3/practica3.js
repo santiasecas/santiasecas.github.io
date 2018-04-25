@@ -16,8 +16,10 @@ window.addEventListener("load", function() {
 	.controls()
 	.touch()
 	.enableSound();
-		
-	Q.load(["mario_small.png","mario_small.json", "goomba.png", "goomba.json", "bloopa.png", "bloopa.json", "piranha.png", "piranha.json", "koopa.png", "koopa.json", "princess.png", "coin.png", "coin.json","coinbox.png", "coinbox.json", "lives.png", "music_main.ogg", "music_die.ogg", "music_level_complete.ogg", "music_game over.ogg", "coin.ogg", "jump.ogg", "kick.ogg", "bump.ogg"], function(){
+	
+	Q.load(["mario_small.png","mario_small.json", "goomba.png", "goomba.json", "bloopa.png", "bloopa.json", "piranha.png", "piranha.json",
+	"koopa.png", "koopa.json", "princess.png", "coin.png", "coin.json","coinbox.png", "coinbox.json", "lives.png", "music_main.ogg",
+	"music_die.ogg", "music_level_complete.ogg", "music_game_over.ogg", "coin.ogg", "jump.ogg", "kick.ogg", "bump.ogg","gameover.png","mainTitle2.png"], function(){
 		Q.compileSheets("mario_small.png","mario_small.json");
 		Q.compileSheets("goomba.png", "goomba.json");
 		Q.compileSheets("bloopa.png", "bloopa.json");
@@ -25,7 +27,6 @@ window.addEventListener("load", function() {
 		Q.compileSheets("coin.png","coin.json");
 		Q.compileSheets("coinbox.png","coinbox.json");
 		Q.compileSheets("koopa.png","koopa.json");
-		Q.stageScene("level1");
 	});
 	
 	//JUGADOR MARIO
@@ -220,7 +221,6 @@ window.addEventListener("load", function() {
 			this.on("bump.left, bump.right, bump.top", function(collision) {
 				if(collision.obj.isA("Mario")) {
 					Q.stage().pause();
-					Q.audio.play("music_level_complete.ogg");
 					Q.stageScene("victoria",1, { label: "You Win" });
 				}
 			});
@@ -273,18 +273,18 @@ window.addEventListener("load", function() {
 			this._super(p, {
 				sheet: 'coinbox',
 				sprite: "CoinBoxAnimation",
-				gravity: 0
+				gravity: 0,
+				coinsInside: 1
 			});
 			this.add('2d, aiBounce, animation');
 			this.play('shine');
-			
 			this.on("bump.bottom", function(collision) {
-				if(collision.obj.isA("Mario")) {
+				if(collision.obj.isA("Mario") && this.p.coinsInside > 0) {
 					Q.audio.play("coin.ogg");
-					this.del('2d');
 					Q.state.inc("coins", 1);
 					Q.state.inc("score", 200);
-					this.play('used');
+					this.p.coinsInside -= 1;
+					if(this.p.coinsInside < 1) this.play('used');
 				}
 			});
 		}
@@ -320,13 +320,12 @@ window.addEventListener("load", function() {
 		for(c in coins) {
 			var coin = stage.insert(new Q.Coin(coinsToMap(coins[c])));
 		}
-		var coinBoxes = [[16,21],[22,17],[21,21],[23,21],[63,21],[77,21],[92,17],[99,21],[104,21],[107,21],[110,21],[107,17],[167,21]]
+		var coinBoxes = [[16,21,1],[22,17,1],[21,21,1],[23,21,1],[63,21,1],[77,21,1],[92,17,1],[99,21,10],[104,21,1],[107,21,1],[110,21,1],[107,17,1],[167,21,1]]
 		for(c in coinBoxes){
 			var coinBox = stage.insert(new Q.CoinBox(coinboxesToMap(coinBoxes[c])));
 		}
-		Q.audio.play("music_main.ogg", { loop: true});
+	
 		stage.add("viewport").follow(mario,{ x: true, y: false });
-		a = stage.viewport;
 		stage.centerOn(102,675);
 		stage.viewport.offsetX = -50;
 		stage.viewport.offsetY = 0;
@@ -336,12 +335,12 @@ window.addEventListener("load", function() {
 		return {x: + a*35 + 8.5, y: b*34+17};
 	}
 	
-	function coinboxesToMap([a, b]) {
-		return {x: + a*34+17, y: b*34+18};
+	function coinboxesToMap([a, b, c]) {
+		return {x: + a*34+17, y: b*34+18,coinsInside: c};
 	}
 	//MUERTE
 	Q.scene("muerte", function(stage) {
-		Q.audio.stop('music_main.ogg');
+		Q.audio.stop();
 		Q.audio.play('music_die.ogg');
 		var box = stage.insert(new Q.UI.Container({
 			x: Q.width/2, y: Q.height/2, fill: "rgba(0,0,0,0.5)"
@@ -351,15 +350,18 @@ window.addEventListener("load", function() {
 			label: "Continue" }));
 		var label = box.insert(new Q.UI.Text({x:10, y: -10 - button.p.h, color: "#000",
 			label: stage.options.label }));
-		button.on("click",function() {
-			initGame();
+			
+		button.on("touch",function() {
+			if(Q.state.p.lives > 0) initGame();
+			else Q.stageScene("derrota",1);
 		});
 		box.fit(20);
 	});
 	
 	//VICTORIA
 	Q.scene("victoria", function(stage) {
-		Q.audio.stop('music_main.ogg');
+		Q.audio.stop();
+		Q.audio.play("music_level_complete.ogg");
 		var box = stage.insert(new Q.UI.Container({
 			x: Q.width/2, y: Q.height/2, fill: "rgba(0,0,0,0.5)"
 		}));
@@ -368,7 +370,7 @@ window.addEventListener("load", function() {
 			label: "Play Again" }));
 		var label = box.insert(new Q.UI.Text({x:10, y: -10 - button.p.h, color: "#000",
 			label: stage.options.label }));
-		button.on("click",function() {
+		button.on("touch",function() {
 			Q.state.reset({ lives: 3, score: 0, coins:0});
 			initGame();
 		});
@@ -377,21 +379,19 @@ window.addEventListener("load", function() {
 	
 	//DERROTA
 	Q.scene("derrota", function(stage) {
-		Q.audio.stop('music_main.mp3');
-		Q.audio.play("music_game over.ogg");
+		Q.audio.stop();
+		Q.audio.play("music_game_over.ogg");
 		
 		var box = stage.insert(new Q.UI.Container({
-			x: Q.width/2, y: Q.height/2, fill: "rgba(0,0,0,0.5)"
+			x: Q.width/2, y: Q.height/2
 		}));
-
-		var button = box.insert(new Q.UI.Button({ x: 0, y: 0, fill: "#CCC",
-			label: "Play Again" }));
-		var label = box.insert(new Q.UI.Text({x:10, y: -10 - button.p.h, color: "#000",
-			label: stage.options.label }));
-		button.on("click",function() {
-			initGame();
+		
+		var button = box.insert(new Q.UI.Button({ asset: "gameover.png" }));
+		
+		button.on("touch",function() {
+			Q.state.reset({ lives: 3, score: 0, coins:0});
+			startGame();
 		});
-		box.fit(20);
 	});
 	
 	//MARCADOR DE PUNTUACIÓN
@@ -399,17 +399,19 @@ window.addEventListener("load", function() {
 		var punt1 = stage.insert(new Q.UI.Text({
 			x: 20, 
 			y: 20, 
-			size: 18,
+			size: 14,
 			align: 'left',
 			color: '#fff',
+			family: 'emulogic',
 			label: 'Mario'
 		}));
 		var punt2 = stage.insert(new Q.UI.Text({
 			x: 20, 
 			y: 20, 
-			size: 18,
+			size: 14,
 			align: 'left',
 			color: '#fff',
+			family: 'emulogic',
 			label: '\n' + Q.state.p.score
 		}));
 		Q.state.on("change.score", this, function(score) {
@@ -420,16 +422,17 @@ window.addEventListener("load", function() {
 	//MARCADOR DE MONEDAS
 	Q.scene('coins', function(stage){
 		var coin = stage.insert(new Q.Coin({
-			x: 140,
-			y: 50,
+			x: 130,
+			y: 45,
 			scale: 0.7
 		}));
 		var monedas = stage.insert(new Q.UI.Text({
-			x: 150,
+			x: 135,
 			y: 20, 
-			size: 18,
+			size: 14,
 			align: 'left',
 			color: '#fff',
+			family: 'emulogic',
 			label: '\n x ' + Q.state.p.coins
 		}));
 		Q.state.on("change.coins", this, function( coins ) {
@@ -441,35 +444,56 @@ window.addEventListener("load", function() {
 	Q.scene('lives', function(stage){
 		var lives = stage.insert(new Q.MarioVidas({
 			x: 240,
-			y: 50,
+			y: 45,
 			scale: 0.7
 		}));
 		var lives2 = stage.insert(new Q.UI.Text({
-			x: 250,
+			x: 245,
 			y: 20, 
-			size: 18,
+			size: 14,
 			align: 'left',
 			color: '#fff',
+			family: 'emulogic',
 			label: '\n x ' + Q.state.p.lives
 		}));
 		Q.state.on("change.lives", this, function( lives ) {
 			lives2.p.label = '\n x ' + lives;
 		});	
 	});
-
+	
+	//MENU
+	Q.scene("menu", function(stage) {
+		
+		var box = stage.insert(new Q.UI.Container({
+			x: Q.width/2, y: Q.height/2
+		}));
+		
+		var button = box.insert(new Q.UI.Button({ asset: "mainTitle2.png" }));
+		
+		button.on("touch",function() {
+			Q.state.reset({ lives: 3, score: 0, coins:0});
+			initGame();
+		});
+	});
 
 	//CARGA INICIO
-	function initGame() {
+	function startGame() {
 		Q.loadTMX("level1.tmx", function() {
+			Q.audio.stop();
 			Q.clearStages();
-			Q.stageScene("level1");
-			Q.stageScene("score", 2);
-			Q.stageScene("coins", 3);
-			Q.stageScene("lives", 4);
+			Q.stageScene("menu");
 		});
 	}
+	
+	function initGame() {
+		Q.clearStages();
+		Q.audio.stop();
+		Q.audio.play("music_main.ogg", { loop: true});
+		Q.stageScene("level1");
+		Q.stageScene("score", 2);
+		Q.stageScene("coins", 3);
+		Q.stageScene("lives", 4);
+	}
 
-	Q.state.reset({ lives: 3, score: 0, coins:0});
-	initGame();
+	startGame();
 });
-
