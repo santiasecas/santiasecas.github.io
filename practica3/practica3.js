@@ -15,7 +15,7 @@ window.addEventListener("load", function() {
 	})
 	.controls()
 	.touch()
-	.enableSound();
+	.enableSound()
 	
 	Q.load(["mario_small.png","mario_small.json", "goomba.png", "goomba.json", "bloopa.png", "bloopa.json", "piranha.png", "piranha.json",
 	"koopa.png", "koopa.json", "princess.png", "coin.png", "coin.json","coinbox.png", "coinbox.json", "lives.png", "music_main.ogg",
@@ -48,6 +48,13 @@ window.addEventListener("load", function() {
 		step: function(dt) {
 			if(Q.inputs['up'] && !this.p.jumping) {
 				Q.audio.play("jump.ogg")
+			}
+			//Ajusto el viewport a límite izquierdo de la pantalla
+			if(this.p.x < 102) {
+				st.viewport.offsetX = this.p.x - 162;
+			}
+			if(this.p.x > 102) {
+				st.viewport.offsetX = -50;
 			}
 			//Limite izquierdo del mapa
 			if(this.p.x <= 17) {
@@ -302,7 +309,7 @@ window.addEventListener("load", function() {
 	//LEVEL 1
 	Q.scene("level1", function(stage) {
 		Q.stageTMX("level1.tmx",stage);
-		var mario = stage.insert(new Q.Mario({x: 102, y: 849}));
+		var mario = stage.insert(new Q.Mario({x: 112, y: 849}));
 		var koopa = stage.insert(new Q.Koopa({x: 748, y: 849}));
 		var koopa2 = stage.insert(new Q.Koopa({x: 1428, y: 849}));
 		var koopa3 = stage.insert(new Q.Koopa({x: 5814, y: 849}));
@@ -324,11 +331,11 @@ window.addEventListener("load", function() {
 		for(c in coinBoxes){
 			var coinBox = stage.insert(new Q.CoinBox(coinboxesToMap(coinBoxes[c])));
 		}
-	
 		stage.add("viewport").follow(mario,{ x: true, y: false });
-		stage.centerOn(102,675);
+		stage.centerOn(115,675);
 		stage.viewport.offsetX = -50;
 		stage.viewport.offsetY = 0;
+		st = stage;
 	});
 	
 	function coinsToMap([a, b]) {
@@ -351,7 +358,7 @@ window.addEventListener("load", function() {
 		var label = box.insert(new Q.UI.Text({x:10, y: -10 - button.p.h, color: "#000",
 			label: stage.options.label }));
 			
-		button.on("touch",function() {
+		button.on("click",function() {
 			if(Q.state.p.lives > 0) initGame();
 			else Q.stageScene("derrota",1);
 		});
@@ -370,9 +377,9 @@ window.addEventListener("load", function() {
 			label: "Play Again" }));
 		var label = box.insert(new Q.UI.Text({x:10, y: -10 - button.p.h, color: "#000",
 			label: stage.options.label }));
-		button.on("touch",function() {
+		button.on("click",function() {
 			Q.state.reset({ lives: 3, score: 0, coins:0});
-			initGame();
+			startGame();
 		});
 		box.fit(20);
 	});
@@ -388,7 +395,7 @@ window.addEventListener("load", function() {
 		
 		var button = box.insert(new Q.UI.Button({ asset: "gameover.png" }));
 		
-		button.on("touch",function() {
+		button.on("click",function() {
 			Q.state.reset({ lives: 3, score: 0, coins:0});
 			startGame();
 		});
@@ -470,7 +477,7 @@ window.addEventListener("load", function() {
 		
 		var button = box.insert(new Q.UI.Button({ asset: "mainTitle2.png" }));
 		
-		button.on("touch",function() {
+		button.on("click",function() {
 			Q.state.reset({ lives: 3, score: 0, coins:0});
 			initGame();
 		});
