@@ -36,9 +36,10 @@ window.addEventListener("load", function() {
 				sheet: 'marioR',
 				sprite: "MarioAnimation",
 				jumpSpeed: -525,
-				speed: 235
+				speed: 235,
+				dead: 0
 			});
-			this.add('2d, platformerControls, animation');
+			this.add('2d, platformerControls, animation, tween');
 			this.on("bump.top", function(collision) {
 				if(collision.obj.className != "Coin" && collision.obj.className != "CoinBox"){
 					Q.audio.play("bump.ogg")
@@ -51,10 +52,10 @@ window.addEventListener("load", function() {
 			}
 			//Ajusto el viewport a límite izquierdo de la pantalla
 			if(this.p.x < 102) {
-				st.viewport.offsetX = this.p.x - 162;
+				Q.stage().viewport.offsetX = this.p.x - 162;
 			}
 			if(this.p.x > 102) {
-				st.viewport.offsetX = -50;
+				Q.stage().viewport.offsetX = -50;
 			}
 			//Limite izquierdo del mapa
 			if(this.p.x <= 17) {
@@ -65,25 +66,29 @@ window.addEventListener("load", function() {
 				this.p.x = 6700
 			}
 			//Limite inferior del mapa
-			if(this.p.y > 1000){
+			if(this.p.y > 900 && this.p.dead == 0){
 				this.marioDeath();
 			}
-			if(this.p.vx > 0) {
-				this.play("run_right"); 
-			} else if(this.p.vx < 0) {
-				this.play("run_left");
-			} else {
-				this.play("stand_" + this.p.direction);
-			}
-			if(this.p.jumping && this.p.landed < 0){
+			if(this.p.dead == 1) this.play("death");
+			else if(this.p.jumping && this.p.landed < 0){
 				this.play("jump_" + this.p.direction);
 			}
+			else if(this.p.vx > 0) this.play("run_right");
+			else if(this.p.vx < 0) this.play("run_left"); 
+			else this.play("stand_" + this.p.direction);
+
+			
 		},
 		
 		marioDeath: function() {
-			Q.state.inc("lives", -1);
-			this.play("death");
-			Q.stage().pause();
+			this.p.dead = 1;
+			this.del('2d, platformerControls');
+			Q.state.dec("lives", 1);
+			this.animate({y: this.p.y - 70 }, 0.3, Q.Easing.Quadratic.In, { callback: function() {
+						this.animate({y: this.p.y + 300}, 0.7, Q.Easing.Quadratic.In, { callback: function() { this.destroy(); } });
+					}
+				}
+			);
 			Q.stageScene("muerte", 1, { label: "You Died" });
 		}
 	});
@@ -96,7 +101,7 @@ window.addEventListener("load", function() {
 		run_left: { frames: [15,16,17], rate: 1/8 },
 		jump_right: { frames: [4], loop: false },
 		jump_left: { frames: [18], loop: false },
-		death: { frames: [12] }
+		death: { frames: [12], loop: false, rate: 1/4 }
 	});
 	
 	//ENEMIGO GOOMBA
@@ -182,7 +187,8 @@ window.addEventListener("load", function() {
 			this.add('2d, aiBounce, animation');
 			this.play("eat");
 			this.on("bump.left, bump.right, bump.bottom, bump.top", function(collision) {
-				if(collision.obj.isA("Mario")) {
+				if(collision.obj.isA("Mario") && collision.obj.p.dead == 0) {
+					this.del('2d');
 					collision.obj.marioDeath();
 				}
 			});
@@ -207,7 +213,7 @@ window.addEventListener("load", function() {
 				}
 			});
 			this.entity.on("bump.left, bump.right, bump.bottom", function(collision) {
-				if(collision.obj.isA("Mario")) {
+				if(collision.obj.isA("Mario") && collision.obj.p.dead == 0) {
 					collision.obj.marioDeath();
 				}
 			});
@@ -224,7 +230,7 @@ window.addEventListener("load", function() {
 			this._super(p, {
 				asset: 'princess.png'
 			});
-			this.add('2d, aiBounce');
+			this.add('2d');
 			this.on("bump.left, bump.right, bump.top", function(collision) {
 				if(collision.obj.isA("Mario")) {
 					Q.stage().pause();
@@ -252,14 +258,17 @@ window.addEventListener("load", function() {
 				sprite: "CoinAnimation",
 				gravity: 0
 			});
-			this.add('2d, aiBounce, animation');
+			this.add('2d, animation, tween');
 			this.play('shine');
 			
 			this.on("bump.left, bump.right, bump.top, bump.bottom", function(collision) {
 				if(collision.obj.isA("Mario")) {
 					Q.audio.play("coin.ogg");
 					this.del('2d');
-					this.destroy();
+					this.p.type = Q.SPRITE_NONE;
+					this.animate({y: this.p.y - 70 }, 0.1, Q.Easing.Quadratic.In, { callback: function() {
+						this.destroy();}
+					});
 					Q.state.inc("coins", 1);
 					Q.state.inc("score", 200);
 				}
@@ -283,15 +292,23 @@ window.addEventListener("load", function() {
 				gravity: 0,
 				coinsInside: 1
 			});
-			this.add('2d, aiBounce, animation');
+			this.add('2d, aiBounce, animation, tween');
 			this.play('shine');
 			this.on("bump.bottom", function(collision) {
 				if(collision.obj.isA("Mario") && this.p.coinsInside > 0) {
-					Q.audio.play("coin.ogg");
-					Q.state.inc("coins", 1);
-					Q.state.inc("score", 200);
-					this.p.coinsInside -= 1;
-					if(this.p.coinsInside < 1) this.play('used');
+					this.animate({y: this.p.y - 5 }, 0.05, Q.Easing.Quadratic.In, { callback: function() {
+								this.animate({y: this.p.y + 5}, 0.05, Q.Easing.Quadratic.In, { 
+									callback: function() { 
+										Q.audio.play("coin.ogg");
+										Q.state.inc("coins", 1);
+										Q.state.inc("score", 200);
+										this.p.coinsInside -= 1;
+										if(this.p.coinsInside < 1) this.play('used'); 
+									} 
+								});
+							}
+						}
+					);
 				}
 			});
 		}
@@ -335,7 +352,6 @@ window.addEventListener("load", function() {
 		stage.centerOn(115,675);
 		stage.viewport.offsetX = -50;
 		stage.viewport.offsetY = 0;
-		st = stage;
 	});
 	
 	function coinsToMap([a, b]) {
