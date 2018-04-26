@@ -30,7 +30,7 @@ window.addEventListener("load", function() {
 		Q.compileSheets("koopa.png","koopa.json");
 	});
 	
-	nivel = 0;
+	nivel = 1;
 	
 	//CARGA INICIAL DEL JUEGO
 	Q.loadTMX("level1.tmx", function() {

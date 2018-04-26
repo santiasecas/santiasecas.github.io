@@ -9,7 +9,7 @@
 Quintus.SMBScenes = function(Q) {
 	//MENU INICIAL
 	Q.scene("menu", function(stage) {
-		nivel = 0;
+		nivel = 1;
 		var box = stage.insert(new Q.UI.Container({
 			x: Q.width/2, y: Q.height/2
 		}));
@@ -124,7 +124,7 @@ Quintus.SMBScenes = function(Q) {
 	
 	//DERROTA
 	Q.scene("derrota", function(stage) {
-		nivel = 0;
+		nivel = 1;
 		Q.audio.stop();
 		Q.audio.play("music_game_over.ogg");
 		
@@ -143,7 +143,9 @@ Quintus.SMBScenes = function(Q) {
 	//VICTORIA
 	Q.scene("victoria", function(stage) {
 		nivel++;
-		if(nivel == 1) {
+		if(nivel > 2) {
+			//Este código se añade para volver al nivel 1 en bucle.
+			//Si hubiera más niveles, no haría falta.
 			Q.audio.stop();
 			Q.audio.play("music_level_complete.ogg");
 			var box = stage.insert(new Q.UI.Container({
@@ -255,13 +257,13 @@ Quintus.SMBScenes = function(Q) {
 		Q.clearStages();
 		Q.audio.stop();
 		Q.audio.play("music_main.ogg", { loop: true});
-		if(nivel == 0) {
+		if(nivel == 1) {
 			Q.stageScene("level1");
 			Q.stageScene("score", 2);
 			Q.stageScene("coins", 3);
 			Q.stageScene("lives", 4);
 		}
-		else if(nivel == 1) {
+		else if(nivel == 2) {
 			Q.stageScene("level2");
 			Q.stageScene("score", 2);
 			Q.stageScene("coins", 3);
@@ -271,7 +273,7 @@ Quintus.SMBScenes = function(Q) {
 	
 	//CARGA INICIO
 	function startGame() {
-		if(nivel == 1) {
+		if(nivel == 2) {
 			Q.loadTMX("level2.tmx", function() {
 				Q.audio.stop();
 				Q.clearStages();
