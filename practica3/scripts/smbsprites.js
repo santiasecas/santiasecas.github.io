@@ -200,6 +200,7 @@ Quintus.SMBSprites = function(Q) {
 		added: function(){
 			this.entity.on("bump.top", function(collision) {
 				if(collision.obj.isA("Mario")) {
+					var points = Q.stage().insert(new Q.Points100({x: (this.p.x),y: (this.p.y - 17)}));
 					this.play("death");
 					collision.obj.p.vy = -300;
 					Q.audio.play("kick.ogg");
@@ -271,6 +272,63 @@ Quintus.SMBSprites = function(Q) {
 		}
 	});
 	
+	//COIN_SPINNER
+	Q.Sprite.extend("CoinSpinner",{
+		init: function(p){
+			this._super(p, {
+				asset: 'coin_spinner.png',
+				sensor: true
+			});
+			this.add('tween');
+			this.animate({y: this.p.y - 50 }, 0.15, Q.Easing.Quadratic.In, { callback: function() {
+						this.destroy();}
+				});
+		}
+	});
+	
+	//100point
+	Q.Sprite.extend("Points100",{
+		init: function(p){
+			this._super(p, {
+				asset: '100.png',
+				sensor: true
+			});
+			this.add('tween');
+			this.animate({y: this.p.y - 50 }, 0.3, Q.Easing.Quadratic.In, { callback: function() {
+						this.destroy();}
+				});
+		}
+	});
+	
+	//200point
+	Q.Sprite.extend("Points200",{
+		init: function(p){
+			this._super(p, {
+				asset: '200.png',
+				sensor: true
+			});
+			this.add('tween');
+			this.animate({y: this.p.y - 50 }, 0.3, Q.Easing.Quadratic.In, { callback: function() {
+						this.destroy();}
+				});
+		}
+	});
+	
+	//1up
+	Q.Sprite.extend("Live1up",{
+		init: function(p){
+			this._super(p, {
+				asset: '1up.png',
+				sensor: true
+			});
+			this.add('tween');
+			this.animate({y: this.p.y - 50 }, 0.3, Q.Easing.Quadratic.In, { callback: function() {
+						this.destroy();}
+				});
+		}
+	});
+	
+	
 	//COINS
 	Q.Sprite.extend("Coin",{
 		init: function(p){
@@ -291,6 +349,7 @@ Quintus.SMBSprites = function(Q) {
 					this.animate({y: this.p.y - 70 }, 0.1, Q.Easing.Quadratic.In, { callback: function() {
 						this.destroy();}
 					});
+					var points = Q.stage().insert(new Q.Points200({x: (this.p.x),y: (this.p.y - 17)}));
 					Q.state.inc("coins", 1);
 					Q.state.inc("score", 200);
 				}
@@ -325,6 +384,8 @@ Quintus.SMBSprites = function(Q) {
 								Q.state.inc("coins", 1);
 								Q.state.inc("score", 200);
 								this.p.coinsInside -= 1;
+								var coinSpinner = Q.stage().insert(new Q.CoinSpinner({x: (this.p.x),y: (this.p.y - 34)}));
+								var points = Q.stage().insert(new Q.Points200({x: (this.p.x),y: (this.p.y - 17)}));
 								if(this.p.coinsInside < 1) this.play('used'); 
 							}});
 						}});	
@@ -335,6 +396,8 @@ Quintus.SMBSprites = function(Q) {
 						this.animate({y: this.p.y + 5}, 0.05, Q.Easing.Quadratic.In, { callback: function() { 
 								Q.audio.play("item_rise.ogg");
 								var mushroom = Q.stage().insert(new Q.Mushroom({x: this.p.x, y: this.p.y -34}));
+								var points = Q.stage().insert(new Q.Points200({x: (this.p.x),y: (this.p.y - 17)}));
+								Q.state.inc("score", 200);
 								this.play('used');
 								this.p.mushroom = 0;
 						}});
@@ -362,6 +425,7 @@ Quintus.SMBSprites = function(Q) {
 			this.add('2d, aiBounce');
 			this.on("bump.left, bump.right, bump.top, bump.bottom", function(collision) {
 				if(collision.obj.isA("Mario")) {
+					var liveup = Q.stage().insert(new Q.Live1up({x: (this.p.x),y: (this.p.y - 34)}));
 					Q.audio.play("1up.ogg");
 					this.del('2d');
 					this.destroy();

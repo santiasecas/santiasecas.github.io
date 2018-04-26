@@ -18,8 +18,8 @@ window.addEventListener("load", function() {
 	.enableSound()
 	
 	//CARGA DE RECURSOS
-	Q.load(["mario_small.png","mario_small.json", "goomba.png", "goomba.json", "bloopa.png", "bloopa.json", "piranha.png", "piranha.json", "item_rise.ogg", "1up.ogg",
-	"koopa.png", "koopa.json", "princess.png", "coin.png", "coin.json","coinbox.png", "coinbox.json", "lives.png", "music_main.ogg", "mushroom.png","1up_mushroom.png",
+	Q.load(["mario_small.png","mario_small.json", "goomba.png", "goomba.json", "bloopa.png", "bloopa.json", "piranha.png", "piranha.json", "item_rise.ogg", "1up.ogg","coin_spinner.png",
+	"koopa.png", "koopa.json", "princess.png", "coin.png", "coin.json","coinbox.png", "coinbox.json", "lives.png", "music_main.ogg", "mushroom.png","1up_mushroom.png","100.png","200.png","1up.png",
 	"music_die.ogg", "music_level_complete.ogg", "music_game_over.ogg", "coin.ogg", "jump.ogg", "kick.ogg", "bump.ogg","gameover.png","mainTitle2.png", "platform.png"], function(){
 		Q.compileSheets("mario_small.png","mario_small.json");
 		Q.compileSheets("goomba.png", "goomba.json");
