@@ -1,5 +1,8 @@
 {
-	"koopaleft":{"sx":0,"sy":0,"tileW":32,"tileH":45,"frames":2},
-	"koopaDie":{"sx":64,"sy":0,"tileW":32,"tileH":45,"frames":1},
-	"kooparight":{"sx":96,"sy":0,"tileW":32,"tileH":45,"frames":2}
+	"koopaWalk":{"sx":0,"sy":0,"tileW":32,"tileH":47,"frames":2},
+	"koopaFly":{"sx":64,"sy":0,"tileW":32,"tileH":47,"frames":2},
+	"koopaShell":{"sx":128,"sy":0,"tileW":32,"tileH":47,"frames":1},
+	"redKoopaWalk":{"sx":0,"sy":47,"tileW":32,"tileH":47,"frames":2},
+	"redKoopaFly":{"sx":64,"sy":47,"tileW":32,"tileH":47,"frames":2},
+	"redKoopaShell":{"sx":128,"sy":47,"tileW":32,"tileH":47,"frames":1}
 }
