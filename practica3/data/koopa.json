@@ -1,8 +1,8 @@
 {
 	"koopaWalk":{"sx":0,"sy":0,"tileW":32,"tileH":47,"frames":2},
 	"koopaFly":{"sx":64,"sy":0,"tileW":32,"tileH":47,"frames":2},
-	"koopaShell":{"sx":128,"sy":0,"tileW":32,"tileH":47,"frames":1},
+	"koopaShell":{"sx":128,"sy":17,"tileW":32,"tileH":29,"frames":1},
 	"redKoopaWalk":{"sx":0,"sy":47,"tileW":32,"tileH":47,"frames":2},
 	"redKoopaFly":{"sx":64,"sy":47,"tileW":32,"tileH":47,"frames":2},
-	"redKoopaShell":{"sx":128,"sy":47,"tileW":32,"tileH":47,"frames":1}
+	"redKoopaShell":{"sx":128,"sy":64,"tileW":32,"tileH":29,"frames":1}
 }
