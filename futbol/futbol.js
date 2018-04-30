@@ -138,7 +138,7 @@ window.addEventListener("load", function() {
 	});
 	
 	Q.scene("mapa", function(stage) {
-		Q.audio.play("futbol.ogg", { loop: true});
+		//Q.audio.play("futbol.ogg", { loop: true});
 		Q.stageTMX("mapa.tmx",stage);
 		stage.insert(new Q.Player());
 		stage.insert(new Q.Player({x:1400, y:380, sheet:'player2', player:2}));
@@ -149,7 +149,7 @@ window.addEventListener("load", function() {
 	
 	//MARCADOR DE PUNTUACIÓN
 	Q.scene('goles1', function(stage){
-		var punt1 = stage.insert(new Q.UI.Text({
+		stage.insert(new Q.UI.Text({
 			x: 100, 
 			y: 20, 
 			size: 24,
@@ -158,7 +158,7 @@ window.addEventListener("load", function() {
 			family: 'emulogic',
 			label: 'Player 1'
 		}));
-		var goles1 = stage.insert(new Q.UI.Text({
+		var p1 = stage.insert(new Q.UI.Text({
 			x: 100, 
 			y: 20, 
 			size: 24,
@@ -167,15 +167,17 @@ window.addEventListener("load", function() {
 			family: 'emulogic',
 			label: '\n' + Q.state.p.goles1
 		}));
-		Q.state.on("change.goles1", this, function(score) {
-			goles1.p.label = '\n' + score;
-			Q.audio.stop();
-			initGame();
+		Q.state.on("change.goles1", this, function(goles1) {
+			p1.p.label = '\n' + goles1;
+			if(goles1 <= 6) initGame();
+			else {
+				Q.stageScene("victoria",1, { label: "Player 1 Wins!" });
+			}
 		});
 	});	
 	
 	Q.scene('goles2', function(stage){	
-		var punt2 = stage.insert(new Q.UI.Text({
+		stage.insert(new Q.UI.Text({
 			x: 1300, 
 			y: 20, 
 			size: 24,
@@ -184,7 +186,7 @@ window.addEventListener("load", function() {
 			family: 'emulogic',
 			label: 'Player 2'
 		}));
-		var goles2 = stage.insert(new Q.UI.Text({
+		var p2 = stage.insert(new Q.UI.Text({
 			x: 1300, 
 			y: 20, 
 			size: 24,
@@ -193,24 +195,42 @@ window.addEventListener("load", function() {
 			family: 'emulogic',
 			label: '\n' + Q.state.p.goles2
 		}));
-		Q.state.on("change.goles2", this, function(score) {
-			goles2.p.label = '\n' + score;
-			Q.audio.stop();
-			initGame();
+		Q.state.on("change.goles2", this, function(goles2) {
+			p2.p.label = '\n' + goles2;
+			if(goles2 <= 6) initGame();
+			else {
+				Q.stageScene("victoria",1, { label: "Player 2 Wins!" });
+			}
 		});	
 	});
 
+	Q.scene("victoria", function(stage) {
+		var box = stage.insert(new Q.UI.Container({
+			x: Q.width/2, y: Q.height/2
+		}));
+		
+		var button = box.insert(new Q.UI.Button({ x: 0, y: 0, fill: "#CCC",
+			label: "Continue" }));
+			
+		var label = box.insert(new Q.UI.Text({x:10, y: -10 - button.p.h, color: "#000",
+			label: stage.options.label }));
+			
+		button.on("click",function() {
+			startGame();
+		});
+	});
+	
+	
 	//CARGA INICIAL DEL JUEGO
-	
-	
 	function startGame() {
-		Q.state.reset({ goles1: 0, goles2: 0});
+		Q.state.reset({goles1: 0, goles2: 0});
 		Q.loadTMX("mapa.tmx", function() {
 			initGame();
 		});
 	}
 	
 	function initGame() {
+		Q.audio.stop();
 		Q.clearStages();
 		Q.stageScene("mapa");
 		Q.stageScene("goles1", 2);
