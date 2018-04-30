@@ -169,6 +169,7 @@ window.addEventListener("load", function() {
 		}));
 		Q.state.on("change.goles1", this, function(score) {
 			goles1.p.label = '\n' + score;
+			Q.audio.stop();
 			initGame();
 		});
 	});	
@@ -194,6 +195,7 @@ window.addEventListener("load", function() {
 		}));
 		Q.state.on("change.goles2", this, function(score) {
 			goles2.p.label = '\n' + score;
+			Q.audio.stop();
 			initGame();
 		});	
 	});
@@ -209,6 +211,7 @@ window.addEventListener("load", function() {
 	}
 	
 	function initGame() {
+		Q.clearStages();
 		Q.stageScene("mapa");
 		Q.stageScene("goles1", 2);
 		Q.stageScene("goles2", 3);
