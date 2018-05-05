@@ -40,6 +40,7 @@ Quintus.Anim = function(Q) {
         if(p.animationChanged) {
           p.animationChanged = false;
         } else {
+          p.animationTime += dt;
           if(p.animationTime > rate) {
             stepped = Math.floor(p.animationTime / rate);
             p.animationTime -= stepped * rate;
@@ -134,9 +135,8 @@ Quintus.Anim = function(Q) {
       }
 
       startX = curX;
-      endX = Q.width / Math.abs(scale) / Math.abs(p.scale || 1) + p.repeatW;
-      endY = Q.height / Math.abs(scale) / Math.abs(p.scale || 1) + p.repeatH;
-
+      endX = Q.width / scale + p.repeatW;
+      endY = Q.height / scale + p.repeatH;
       while(curY < endY) {
         curX = startX;
         while(curX < endX) {

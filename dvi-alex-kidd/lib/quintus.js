@@ -28,7 +28,7 @@ various other modules:
 @module Quintus
 */
 
-var quintusCore = function(exportTarget,key) { 
+var quintusCore = function(window,key) { 
   "use strict";
 
 /**
@@ -52,7 +52,7 @@ var quintusCore = function(exportTarget,key) {
 
 @class Quintus
 **/
-var Quintus = exportTarget[key] = function(opts) {
+var Quintus = window[key] = function(opts) {
 
   /**
    A la jQuery - the returned `Q` object is actually
@@ -307,6 +307,8 @@ var Quintus = exportTarget[key] = function(opts) {
     if (obj.forEach) {
       obj.forEach(iterator,context);
     } else if (obj.length === +obj.length) {
+      // Prev condition checks if obj's length property is a number
+      // (see https://stackoverflow.com/questions/9188998/obj-length-obj-length-in-javascript)
       for (var i = 0, l = obj.length; i < l; i++) {
         iterator.call(context, obj[i], i, obj);
       }
@@ -2249,10 +2251,6 @@ var Quintus = exportTarget[key] = function(opts) {
 // Lastly, add in the `requestAnimationFrame` shim, if necessary. Does nothing
 // if `requestAnimationFrame` is already on the `window` object.
 (function() {
-    if (typeof window === 'undefined') {
-        return;
-    }
-
     var lastTime = 0;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
     for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {

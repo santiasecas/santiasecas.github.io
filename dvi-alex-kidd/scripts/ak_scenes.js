@@ -8,7 +8,7 @@
 
 Quintus.AKScenes = function(Q) {
 	Q.scene("level1", function(stage) {
-		Q.audio.play('main_theme.ogg',{loop: true});
+		//Q.audio.play('main_theme.ogg',{loop: true});
 		Q.stageTMX('level1.tmx',stage);
 		var alex = stage.insert(new Q.Alex({x: 100, y: 200}));
 		stage.add("viewport").follow(alex,{ x: false, y: true });
