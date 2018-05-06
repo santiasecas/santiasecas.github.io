@@ -64,10 +64,10 @@ Quintus.AKSpritesPlayer = function(Q) {
 		stand_left: { frames: [8], flip: 'x', loop: false },
 		jump_right: { frames: [9], flip: false, loop: false },
 		jump_left: { frames: [9], flip: 'x', loop: false },
-		punch: { frames: [15], loop: false, rate: 1/6, trigger: "noPunch"},
+		punch: { frames: [15], loop: false, rate: 1, trigger: "noPunch"},
 		crouch_right: { frames: [10], flip: false, loop: false},
 		crouch_left: { frames: [10], flip: 'x', loop: false},
-		fist: { frames: [16], loop: false, rate: 1/6, trigger: "destroy"}
+		fist: { frames: [16], loop: false, rate: 1, trigger: "destroy"}
 	});
 	
 	//SPRITE DEL PUÑO DE ALEX
@@ -78,7 +78,7 @@ Quintus.AKSpritesPlayer = function(Q) {
 				sprite: 'AlexAnimation',
 				gravity: 0,
 				sensor: true,
-				type: Q.SPRITE_NONE,
+				//type: Q.SPRITE_NONE,
 				collisionMask:''
 			});
 			this.add('2d, animation');
