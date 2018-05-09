@@ -16,6 +16,7 @@ Quintus.AKSpritesPlayer = function(Q) {
 				sprite: 'AlexAnimation',
 				jumpSpeed: -450,
 				speed: 200,
+				scale: 0.9,
 				punching: 0
 			});
 			this.add('2d, platformerControls, animation, tween');

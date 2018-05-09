@@ -73,7 +73,7 @@ Quintus.AKSpritesObjects = function(Q) {
             this.on("hit.sprite", function(collision) {
                 if (collision.obj.isA("Alex")) {
                     Q.audio.play("coin.ogg");
-                    this.destroy();
+					this.destroy();
                 };
             });
         }
@@ -89,9 +89,9 @@ Quintus.AKSpritesObjects = function(Q) {
             });
             this.add("2d");
             this.on("hit.sprite", function(collision) {
-                if (collision.obj.isA("Alex")) {
+                if (collision.obj.isA("Alex")){
+					this.destroy();
                     Q.audio.play("coin.ogg");
-                    this.destroy();
                 };
             });
         }
@@ -122,5 +122,43 @@ Quintus.AKSpritesObjects = function(Q) {
 	
 	Q.animations("ArrowAnimation", {
 		point: { frames: [0,1], rate: 1/2}
+	});
+	
+	Q.Sprite.extend("Logo",{
+		init: function(p){
+			this._super(p, {
+				sheet: "logo",
+				sprite: "LogoAnimation",
+				x: 256,
+                y: 192,
+                scale: 0.64,
+				gravity: 0
+			});
+			this.add("animation");
+			this.play("light");
+		}
+	});
+	
+	Q.animations("LogoAnimation", {
+		light: { frames: [0,1], rate: 1/8}
+	});
+	
+	Q.Sprite.extend("Rice",{
+		init: function(p){
+			this._super(p, {
+				sheet: 'escenary',
+                frame: 17,
+				x: 32,
+                y: 32,
+				gravity: 0,
+				sensor: true
+			});
+			this.on("hit.sprite", function(collision) {
+                if (collision.obj.isA("Alex")) {
+					Q.clearStages();
+					Q.stageScene("creditos");
+				}
+            });
+		}
 	});
 }

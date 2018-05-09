@@ -6,8 +6,13 @@
  *
  */
 
-//Enemigo Bird
+
 Quintus.AKSpritesEnemies = function(Q) {
+    /**===========================================================================================
+     * 
+     *                                         BIRD
+     * 
+     ===========================================================================================*/
     Q.Sprite.extend("Bird", {
         init: function(p) {
             this._super(p, {
@@ -37,7 +42,11 @@ Quintus.AKSpritesEnemies = function(Q) {
         fly_left: { frames: [0, 1], flip: 'x', rate: 1 / 2, loop: true }
     });
 
-    //Enemigo Scorpion
+    /**===========================================================================================
+     * 
+     *                                          SCORPION
+     * 
+     ===========================================================================================*/
     Q.Sprite.extend("Scorpion", {
         init: function(p) {
             this._super(p, {
@@ -69,7 +78,11 @@ Quintus.AKSpritesEnemies = function(Q) {
         move_left: { frames: [0, 1], flip: false, rate: 1 / 4, loop: true }
     });
 
-    //Enemigo rana
+    /**===========================================================================================
+     * 
+     *                                         FROG
+     * 
+     ===========================================================================================*/
     Q.Sprite.extend("Frog", {
         init: function(p) {
             this._super(p, {
@@ -153,4 +166,85 @@ Quintus.AKSpritesEnemies = function(Q) {
         jump_right: { frames: [1], flip: 'x', rate: 1 / 4, loop: true },
         jump_left: { frames: [1], flip: false, rate: 1 / 4, loop: true },
     });
+
+
+
+    /**===========================================================================================
+     * 
+     *                                          GHOST
+     * 
+     ===========================================================================================*/
+    Q.Sprite.extend("Ghost", {
+        init: function(p) {
+            this._super(p, {
+                sheet: 'ghost',
+                sprite: 'GhostAnimation',
+                gravity: 0,
+                dormido: true,
+                esperando: true,
+                MaxVivo: 8,
+                contVivo: 0,
+                esperaMax: 2,
+                contEspera: 0
+            });
+            this.add("2d, animation, aiBounce");
+            this.play("stand_left");
+
+            this.on("hit.sprite", function(collision) {
+                if (collision.obj.isA("Alex")) console.log("Toco a Alex");
+                else if (collision.obj.isA("AlexFist")) {
+                    if (this.p.dormido) {
+                        this.p.dormido = false;
+                        this.play("stand_left_fast");
+                    }
+                }
+            });
+        },
+        step: function(dt) {
+            if (!this.p.dormido) {
+                if (this.p.esperando) {
+                    this.p.contEspera += dt;
+                    if (this.p.contEspera > this.p.esperaMax) {
+                        this.p.esperando = false;
+						this.p.collisionMask = '';
+						this.p.sensor = true;
+                    }
+                } else {
+                    this.p.contVivo += dt;
+                    if (this.p.contVivo > this.p.MaxVivo) {
+                        this.destroy();
+                    } else {
+						PlayerX = Q.stages[0].lists["Alex"][0].p.x;
+						PlayerY = Q.stages[0].lists["Alex"][0].p.y;
+						if(this.p.x ==  PlayerX) {
+							this.play("stand_left"); 
+						}
+                        if(this.p.x > (PlayerX + 2)) {
+						   this.p.x = this.p.x - 1.5;
+						   this.play("stand_left");
+					    }
+						else if(this.p.x < (PlayerX - 2)) {
+						   this.p.x = this.p.x + 1.5;
+						   this.play("stand_right");
+						}
+
+						if(this.p.y > (PlayerY + 2)) {
+						   this.p.y = this.p.y - 1.5;
+						}
+						else if(this.p.y < (PlayerY- 2)) {
+						   this.p.y = this.p.y + 1.5;
+						}
+                    }
+                }
+            }
+        }
+    });
+
+    Q.animations("GhostAnimation", {
+        stand_right: { frames: [0, 1], flip: 'x', rate: 1, loop: true },
+        stand_left: { frames: [0, 1], flip: false, rate: 1, loop: true },
+        stand_right_fast: { frames: [0, 1], flip: 'x', rate: 1 / 4, loop: true },
+        stand_left_fast: { frames: [0, 1], flip: false, rate: 1 / 4, loop: true },
+    });
+
 }
