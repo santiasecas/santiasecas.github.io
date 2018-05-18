@@ -14,14 +14,19 @@ Quintus.AKScenes = function(Q) {
     Q.scene("level1", function(stage) {
         //Q.audio.play('main_theme.ogg',{loop: true});
         Q.stageTMX('level1.tmx', stage);
+        stage.insert(new Q.Mountain({ x: 128, y: 3408 }));
+        stage.insert(new Q.Mountain({ x: 288, y: 3408 }));
+        stage.insert(new Q.Mountain({ x: 416, y: 3408 }));
         var alex = stage.insert(new Q.Alex({ x: 100, y: 200 }));
         stage.insert(new Q.Bird({ x: 200, y: 200 }));
         stage.insert(new Q.Scorpion({ x: 250, y: 500 }));
-        stage.insert(new Q.Frog({ x: 110, y: 200 }));
-        stage.insert(new Q.Question({ x: 200, y: 200, drop: 'sackBig' }));
-        stage.insert(new Q.StarBlock({ x: 232, y: 200, drop: 'sackLittle' }));
-        stage.insert(new Q.Rock({ x: 264, y: 200, drop: 'sackBig' }));
-        stage.insert(new Q.Ghost({ x: 160, y: 200 }));
+        stage.insert(new Q.Frog({ x: 150, y: 200 }));
+        stage.insert(new Q.Question({ x: 464, y: 431, drop: 'ghost' }));
+        stage.insert(new Q.Question({ x: 368, y: 1072, drop: 'ghost' }));
+        stage.insert(new Q.GhostBlock({ x: 240, y: 1616, drop: 'ghost' }));
+        //stage.insert(new Q.StarBlock({ x: 232, y: 200, drop: 'sackLittle' }));
+        //stage.insert(new Q.Rock({ x: 264, y: 200 }));
+        //stage.insert(new Q.Ghost({ x: 160, y: 200 }));
 
 
         //PRIMER NIVEL DE OBJETOS
@@ -43,7 +48,7 @@ Quintus.AKScenes = function(Q) {
             [14, 51],
             [14, 52],
             [3, 54],
-            [1, 61],
+            [1, 62],
             [12, 64],
             [13, 64],
             [14, 64],
@@ -69,6 +74,7 @@ Quintus.AKScenes = function(Q) {
             [7, 22],
             [7, 23],
             [12, 23],
+            [13, 13],
             [13, 24],
             [14, 25],
             [4, 28],
@@ -98,10 +104,10 @@ Quintus.AKScenes = function(Q) {
             [2, 54],
             [4, 55],
             [4, 56],
-            [2, 61],
-            [14, 61],
-            [1, 62],
             [2, 62],
+            [14, 62],
+            [1, 63],
+            [2, 63],
             [13, 62],
             [12, 65],
             [12, 66],
@@ -120,14 +126,14 @@ Quintus.AKScenes = function(Q) {
         for (r in rocks) {
             stage.insert(new Q.Rock(blocksToMap(rocks[r])));
         }
-		stage.insert(new Q.Rice(blocksToMap([13,107])));
+        stage.insert(new Q.Rice(blocksToMap([13, 107])));
         stage.add("viewport").follow(alex, { x: false, y: true });
         stage.centerOn(256, 0);
     });
 
     var count = 0;
-    var menus = ["menu01.png", "menu02.png", "menu03.png", "menu06.png", 
-				 "menu05.png", "menu04.png", "menu07.png"
+    var menus = ["menu01.png", "menu02.png", "menu03.png", "menu06.png",
+        "menu05.png", "menu04.png", "menu07.png"
     ];
 
     Q.Sprite.extend("Menu", {
@@ -145,13 +151,14 @@ Quintus.AKScenes = function(Q) {
             if (this.p.action == true && Q.inputs['fire']) {
                 Q.clearStages();
                 Q.stageScene("map");
+                Q.state.reset({ lives: 3, coins: 0, rings: 0 });
             }
         }
     });
 
     Q.scene("menu", function(stage) {
-		Q.audio.stop();
-		Q.audio.play("menu.ogg");
+        Q.audio.stop();
+        Q.audio.play("menu.ogg");
         var sprite = stage.insert(new Q.Menu);
         sprite.chain({ x: 256, y: 192 }, 0.5, {
             callback: function() {
@@ -181,8 +188,8 @@ Quintus.AKScenes = function(Q) {
         sprite.chain({ x: 256, y: 192 }, 0.5, {
             callback: function() {
                 stage.insert(new Q.Menu({ asset: menus[++count], action: true }));
-				stage.insert(new Q.Logo);
-				count = 0;
+                stage.insert(new Q.Logo);
+                count = 0;
             }
         });
     });
@@ -200,45 +207,150 @@ Quintus.AKScenes = function(Q) {
         },
         step: function(dt) {
             if (Q.inputs['action']) {
-                Q.clearStages();
-                Q.stageScene("level1");
+                startGame();
             }
         }
     });
 
     Q.scene("map", function(stage) {
-		Q.audio.stop();
-		Q.audio.play("map.ogg");
+        Q.audio.stop();
+        Q.audio.play("map.ogg");
         stage.insert(new Q.Map);
         stage.insert(new Q.AlexMap);
         stage.insert(new Q.Arrow);
     });
-	
-	Q.scene("creditos",function(stage) {
-		Q.audio.stop();
-		Q.audio.play("credits.ogg");
-		stage.insert(new Q.Sprite({ asset: "creditos.png", x: 256, y: 192, scale: 0.64 }));
-		var sprite = new Q.Sprite({ asset: "creditos_dani.png", x: 256, y: 192, scale: 0.64 });
-		sprite.add("tween");
-		stage.insert(sprite);
-		sprite.chain({opacity: 0 }, 5, Q.Easing.Quadratic.In, { callback: function() { 
-			var sprite2 = new Q.Sprite({ asset: "creditos_edu.png", x: 256, y: 192, scale: 0.64 });
-			stage.insert(sprite2);
-			sprite2.add("tween");
-			sprite2.chain({opacity: 0 }, 5, Q.Easing.Quadratic.In, { callback: function() { 
-				var sprite3 = new Q.Sprite({ asset: "creditos_jorge.png", x: 256, y: 192, scale: 0.64 });
-				stage.insert(sprite3);
-				sprite3.add("tween");
-				sprite3.chain({opacity: 0 }, 5, Q.Easing.Quadratic.In, { callback: function() { 
-					var sprite4 = new Q.Sprite({ asset: "creditos_santi.png", x: 256, y: 192, scale: 0.64 });
-					stage.insert(sprite4);
-					sprite4.add("tween");
-					sprite4.chain({opacity: 0 }, 5, Q.Easing.Quadratic.In, { callback: function() {
-						Q.clearStages();
-						Q.stageScene("menu");
-					} })
-				} })
-			} })
-		} })
-	});
-}
+
+    Q.scene("creditos", function(stage) {
+        Q.audio.stop();
+        Q.audio.play("credits.ogg");
+        stage.insert(new Q.Sprite({ asset: "creditos.png", x: 256, y: 192, scale: 0.64 }));
+        var sprite = new Q.Sprite({ asset: "creditos_dani.png", x: 256, y: 192, scale: 0.64 });
+        sprite.add("tween");
+        stage.insert(sprite);
+        sprite.chain({ opacity: 0 }, 5, Q.Easing.Quadratic.In, {
+            callback: function() {
+                var sprite2 = new Q.Sprite({ asset: "creditos_edu.png", x: 256, y: 192, scale: 0.64 });
+                stage.insert(sprite2);
+                sprite2.add("tween");
+                sprite2.chain({ opacity: 0 }, 5, Q.Easing.Quadratic.In, {
+                    callback: function() {
+                        var sprite3 = new Q.Sprite({ asset: "creditos_jorge.png", x: 256, y: 192, scale: 0.64 });
+                        stage.insert(sprite3);
+                        sprite3.add("tween");
+                        sprite3.chain({ opacity: 0 }, 5, Q.Easing.Quadratic.In, {
+                            callback: function() {
+                                var sprite4 = new Q.Sprite({ asset: "creditos_santi.png", x: 256, y: 192, scale: 0.64 });
+                                stage.insert(sprite4);
+                                sprite4.add("tween");
+                                sprite4.chain({ opacity: 0 }, 5, Q.Easing.Quadratic.In, {
+                                    callback: function() {
+                                        Q.clearStages();
+                                        Q.stageScene("menu");
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+        })
+    });
+
+    /*
+     ******************************************
+     ****************   HUD   *****************
+     ******************************************
+     */
+    //MARCADOR DE VIDAS
+    Q.scene('lives', function(stage) {
+        var lives = stage.insert(new Q.AlexHud({
+            x: 50,
+            y: 25,
+            scale: 0.7
+        }));
+        var vidas = Q.state.p.lives.toString();
+        while (vidas.length < 2) {
+            vidas = '0' + vidas;
+        }
+        var lives2 = stage.insert(new Q.UI.Text({
+            x: 70,
+            y: 25,
+            size: 10,
+            align: 'left',
+            color: '#fff',
+            family: 'Alex Kidd in Miracle World',
+            label: vidas
+        }));
+        Q.state.on("change.lives", this, function(lives) {
+            lives2.p.label = vidas;
+        });
+    });
+
+    function monedas() {
+        var monedas = Q.state.p.coins.toString();
+        while (monedas.length < 5) {
+            monedas = '0' + monedas;
+        }
+        return monedas;
+    }
+
+    //MARCADOR DE MONEDAS
+    Q.scene('coins', function(stage) {
+        var coins = stage.insert(new Q.SackLittle({
+            x: 230,
+            y: 20
+        }));
+        var coins2 = stage.insert(new Q.UI.Text({
+            x: 250,
+            y: 25,
+            size: 10,
+            align: 'left',
+            color: '#fff',
+            family: 'Alex Kidd in Miracle World',
+            label: monedas()
+        }));
+        Q.state.on("change.coins", this, function(coins) {
+            coins2.p.label = monedas();
+        });
+    });
+
+    //MARCADOR DE ANILLOS
+    Q.scene('rings', function(stage) {
+        var rings = stage.insert(new Q.Ring({
+            x: 400,
+            y: 25,
+            scale: 0.85
+        }));
+        var anillos = Q.state.p.rings.toString();
+        while (anillos.length < 2) {
+            anillos = '0' + anillos;
+        }
+        var rings2 = stage.insert(new Q.UI.Text({
+            x: 420,
+            y: 25,
+            size: 10,
+            align: 'left',
+            color: '#fff',
+            family: 'Alex Kidd in Miracle World',
+            label: anillos
+        }));
+        Q.state.on("change.rings", this, function(rings) {
+            rings2.p.label = '\n x ' + rings;
+        });
+    });
+
+    //CARGA JUEGO
+    function startGame() {
+        Q.loadTMX("level1.tmx", function() {
+            Q.audio.stop();
+            Q.clearStages();
+            Q.audio.stop();
+            Q.audio.play("music_main.ogg", { loop: true });
+            Q.stageScene("level1");
+            Q.stageScene("hud", 2);
+            Q.stageScene("lives", 3);
+            Q.stageScene("coins", 4);
+            Q.stageScene("rings", 5);
+        });
+    }
+};

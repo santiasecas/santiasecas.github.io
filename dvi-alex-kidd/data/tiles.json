@@ -1,0 +1,17 @@
+{
+    "nothing": { "sx": 0, "sy": 0, "tileW": 32, "tileH": 32, "frames": 1 },
+    "earthWeedCornerLeft": { "sx": 32, "sy": 0, "tileW": 32, "tileH": 32, "frames": 1 },
+    "earthCornerLeft": { "sx": 64, "sy": 0, "tileW": 32, "tileH": 32, "frames": 1 },
+    "earthWeedFront": { "sx": 96, "sy": 0, "tileW": 32, "tileH": 32, "frames": 1 },
+    "earthFront": { "sx": 128, "sy": 0, "tileW": 32, "tileH": 32, "frames": 1 },
+    "earthWeedCornerLeft": { "sx": 160, "sy": 0, "tileW": 32, "tileH": 32, "frames": 1 },
+    "earthCornerLeft": { "sx": 192, "sy": 0, "tileW": 32, "tileH": 32, "frames": 1 },
+    "rock": { "sx": 224, "sy": 0, "tileW": 32, "tileH": 32, "frames": 1 },
+    "starBlock": { "sx": 0, "sy": 32, "tileW": 32, "tileH": 32, "frames": 1 },
+    "questionBlock": { "sx": 0, "sy": 64, "tileW": 32, "tileH": 32, "frames": 1 },
+    "deathBlock": { "sx": 0, "sy": 96, "tileW": 32, "tileH": 32, "frames": 1 },
+    "sackBig": { "sx": 0, "sy": 128, "tileW": 32, "tileH": 48, "frames": 1 },
+    "sackSmall": { "sx": 0, "sy": 160, "tileW": 32, "tileH": 48, "frames": 1 },
+    "ring": { "sx": 0, "sy": 192, "tileW": 32, "tileH": 48, "frames": 1 },
+
+}
