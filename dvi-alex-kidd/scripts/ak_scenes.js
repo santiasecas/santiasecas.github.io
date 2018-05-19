@@ -11,16 +11,19 @@ Quintus.AKScenes = function(Q) {
         return { x: +a * 32 + 16, y: b * 32 + 16 };
     }
 
+    Q.scene("die", function(stage) {
+        startGame();
+    });
+
     Q.scene("level1", function(stage) {
         //Q.audio.play('main_theme.ogg',{loop: true});
         Q.stageTMX('level1.tmx', stage);
         stage.insert(new Q.Mountain({ x: 128, y: 3408 }));
         stage.insert(new Q.Mountain({ x: 288, y: 3408 }));
-        stage.insert(new Q.Mountain({ x: 416, y: 3408 }));
         var alex = stage.insert(new Q.Alex({ x: 100, y: 200 }));
-        stage.insert(new Q.Bird({ x: 200, y: 200 }));
-        stage.insert(new Q.Scorpion({ x: 250, y: 500 }));
-        stage.insert(new Q.Frog({ x: 150, y: 200 }));
+        //stage.insert(new Q.Mountain({ x: 416, y: 3408 }));
+        //stage.insert(new Q.Scorpion({ x: 250, y: 500 }));
+        //stage.insert(new Q.Frog({ x: 150, y: 200 }));
         stage.insert(new Q.Question({ x: 464, y: 431, drop: 'ghost' }));
         stage.insert(new Q.Question({ x: 368, y: 1072, drop: 'ghost' }));
         stage.insert(new Q.GhostBlock({ x: 240, y: 1616, drop: 'ghost' }));
@@ -28,6 +31,43 @@ Quintus.AKScenes = function(Q) {
         //stage.insert(new Q.Rock({ x: 264, y: 200 }));
         //stage.insert(new Q.Ghost({ x: 160, y: 200 }));
 
+        var birds = [
+            [8, 19],
+            [8, 26],
+            [4, 34],
+            [8, 37],
+            [6, 46],
+            [6, 49],
+            [8, 54],
+            [8, 64],
+            [8, 74],
+            [2, 81],
+            [2, 91],
+            [8, 94]
+        ];
+
+        for (b in birds) {
+            stage.insert(new Q.Bird(blocksToMap(birds[b])));
+        }
+
+        var sackBig = [
+            [7, 45],
+            [2, 48],
+            [8, 62],
+            [2, 78],
+            [2, 79],
+            [5, 88],
+            [5, 89],
+            [13, 88],
+            [13, 89],
+            [3, 96],
+            [3, 97],
+            [3, 98]
+        ];
+
+        for (s in sackBig) {
+            stage.insert(new Q.SackBig(blocksToMap(sackBig[s])));
+        }
 
         //PRIMER NIVEL DE OBJETOS
         var stars = [
@@ -345,7 +385,7 @@ Quintus.AKScenes = function(Q) {
             Q.audio.stop();
             Q.clearStages();
             Q.audio.stop();
-            Q.audio.play("music_main.ogg", { loop: true });
+            //Q.audio.play("music_main.ogg", { loop: true });
             Q.stageScene("level1");
             Q.stageScene("hud", 2);
             Q.stageScene("lives", 3);

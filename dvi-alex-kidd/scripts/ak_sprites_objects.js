@@ -20,6 +20,7 @@ Quintus.AKSpritesObjects = function(Q) {
             this.on("hit.sprite", function(collision) {
                 if (collision.obj.isA("AlexFist")) {
                     this.drop(0);
+                    Q.audio.play("star_box.ogg");
                     this.destroy();
                 }
             });
@@ -44,6 +45,7 @@ Quintus.AKSpritesObjects = function(Q) {
                         this.p.drop = 'sackBig';
                     }
                     this.destroy();
+                    Q.audio.play("star_box.ogg");
                     this.drop();
                 }
             });
@@ -74,8 +76,15 @@ Quintus.AKSpritesObjects = function(Q) {
                 sheet: 'escenary',
                 frame: 7,
                 gravity: 0,
+                broken: false
             });
             this.add("2d, brokeBox");
+            this.on("hit.sprite", function(collision) {
+                if (collision.obj.isA("AlexFist") && !this.p.broken) {
+                    this.p.broken = true;
+                    Q.audio.play("break_box.ogg");
+                }
+            });
         }
     });
 

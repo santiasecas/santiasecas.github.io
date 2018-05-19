@@ -1,5 +1,0 @@
-{
-	"alexRun": {"sx":0,"sy":0,"tileW":128,"tileH":48,"frames":4},
-	"alexStand": {"sx":0,"sy":48,"tileW":32,"tileH":48,"frames":1},
-	"alexPunch": {"sx":32,"sy":48,"tileW":48,"tileH":48,"frames":1}
-}

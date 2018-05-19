@@ -19,7 +19,8 @@ Quintus.AKSpritesEnemies = function(Q) {
                 sheet: 'bird',
                 sprite: 'BirdAnimation',
                 gravity: 0,
-                vx: 100
+                vx: 60,
+                died: false
             });
             this.add("2d, animation, aiBounce, defaultEnemy");
             this.play("fly_right");
@@ -30,8 +31,7 @@ Quintus.AKSpritesEnemies = function(Q) {
                 this.play("fly_left");
             });
             this.on("hit.sprite", function(collision) {
-                if (collision.obj.isA("Alex")) console.log("Toco a Alex");
-                else if (collision.obj.isA("AlexFist")) this.destroy();
+                if (collision.obj.isA("AlexFist")) this.destroy();
             });
 
         }
@@ -52,7 +52,8 @@ Quintus.AKSpritesEnemies = function(Q) {
             this._super(p, {
                 sheet: 'scorpion',
                 sprite: 'ScorpionAnimation',
-                vx: 50
+                vx: 50,
+                died: false
             });
             this.add("2d, animation, aiBounce, defaultEnemy");
             this.play("move_right");
@@ -63,8 +64,7 @@ Quintus.AKSpritesEnemies = function(Q) {
                 this.play("move_left");
             });
             this.on("hit.sprite", function(collision) {
-                if (collision.obj.isA("Alex")) console.log("Toco a Alex");
-                else if (collision.obj.isA("AlexFist")) this.destroy();
+                if (collision.obj.isA("AlexFist")) this.destroy();
             });
 
         }
@@ -94,7 +94,8 @@ Quintus.AKSpritesEnemies = function(Q) {
                 frame: 0,
                 vx: 0,
                 vy: 0,
-                mirandoDerecha: false
+                mirandoDerecha: false,
+                died: false
             });
             this.add("2d, animation, aiBounce, defaultEnemy");
             this.play("stand_left"); // Mirando hacia la derecha
@@ -123,8 +124,7 @@ Quintus.AKSpritesEnemies = function(Q) {
             });
 
             this.on("hit.sprite", function(collision) {
-                if (collision.obj.isA("Alex")) console.log("Toco a Alex");
-                else if (collision.obj.isA("AlexFist")) this.destroy();
+                if (collision.obj.isA("AlexFist")) this.destroy();
             });
         },
 
@@ -174,7 +174,7 @@ Quintus.AKSpritesEnemies = function(Q) {
      *                                          GHOST
      * 
      ===========================================================================================*/
-     Q.Sprite.extend("Ghost", {
+    Q.Sprite.extend("Ghost", {
         init: function(p) {
             this._super(p, {
                 sheet: 'ghost',
@@ -185,18 +185,16 @@ Quintus.AKSpritesEnemies = function(Q) {
                 contVivo: 0,
                 esperaMax: 1,
                 contEspera: 0,
-                collisionMask:'',
-                type:0,
-                sensor:true
+                collisionMask: '',
+                type: 0,
+                sensor: true
             });
             this.add("2d, animation, aiBounce");
             this.play("stand_left");
             this.on("hit.sprite", function(collision) {
-                if (collision.obj.isA("Alex")){
+                if (collision.obj.isA("Alex")) {
                     this.destroy();
-                    console.log("fantasma colisiona con Alex");
                 }
-                else console.log("fantasma colisiona con algo");
             });
         },
         step: function(dt) {
@@ -239,27 +237,29 @@ Quintus.AKSpritesEnemies = function(Q) {
         stand_right: { frames: [0, 1], flip: 'x', rate: 1, loop: true },
         stand_left: { frames: [0, 1], flip: false, rate: 1, loop: true }
     });
-	
-	/**===========================================================================================
+
+    /**===========================================================================================
      * 
      *                                    DEFAULT ENEMIES
      * 
      ============================================================================================*/
-	Q.component("defaultEnemy", {
-		added: function(){
-			this.entity.on("hit.sprite", function(collision) {
-				if(collision.obj.isA("AlexFist")) {
-					this.destroy();
-					Q.stage().insert(new Q.SmokeEnemyDie({x:this.p.x, y:this.p.y}));
-					//Q.state.inc("score", 100);
-				}
-				//else if(collision.obj.isA("Alex")) {
-				//	collision.obj.AlexDeath();
-				//}
-			});
-			this.entity.on("destroy", function(){ 
-				this.destroy(); 
-			});
-		}
-	});
+    Q.component("defaultEnemy", {
+        added: function() {
+            this.entity.on("hit.sprite", function(collision) {
+                if (collision.obj.isA("AlexFist") && !this.p.died) {
+                    this.p.died = true;
+                    this.destroy();
+                    Q.stage().insert(new Q.SmokeEnemyDie({ x: this.p.x, y: this.p.y }));
+                    Q.audio.play("kill_enemy.ogg");
+                    //Q.state.inc("score", 100);
+                }
+                //else if(collision.obj.isA("Alex")) {
+                //	collision.obj.AlexDeath();
+                //}
+            });
+            this.entity.on("destroy", function() {
+                this.destroy();
+            });
+        }
+    });
 }

@@ -36,8 +36,13 @@ Quintus.AKSpritesPlayer = function(Q) {
             });
         },
         step: function(dt) {
+
             if (this.p.y > 3340) {
                 Q.stages[0].unfollow();
+            }
+            if (this.p.y < Q.stages[0].viewport.y) {
+                Q.clearStages();
+                Q.stageScene("die");
             }
             if (!this.p.muerto) {
                 //GOLPEAR
@@ -78,16 +83,17 @@ Quintus.AKSpritesPlayer = function(Q) {
                     this.die();
                 } else {
                     this.p.vx = 0;
-                    this.p.vy = -40;
+                    this.p.vy = -65;
                 }
             }
 
         },
 
         die: function() {
-            this.p.opacity = .75;
+            Q.state.dec("lives", 1);
+            Q.audio.play("die_alex.ogg");
             this.play("dying");
-            this.p.vy = -40;
+            this.p.vy = -65;
         }
 
     });
@@ -95,14 +101,14 @@ Quintus.AKSpritesPlayer = function(Q) {
     Q.animations("AlexAnimation", {
         run_right: { frames: [0, 1, 2, 3], flip: false, rate: 1 / 4 },
         run_left: { frames: [0, 1, 2, 3], flip: 'x', rate: 1 / 4 },
-        stand_right: { frames: [8], flip: false, loop: false },
-        stand_left: { frames: [8], flip: 'x', loop: false },
-        jump_right: { frames: [9], flip: false, loop: false },
-        jump_left: { frames: [9], flip: 'x', loop: false },
-        punch: { frames: [15], loop: false, rate: 1, trigger: "noPunch" },
-        crouch_right: { frames: [10], flip: false, loop: false },
-        crouch_left: { frames: [10], flip: 'x', loop: false },
-        dying: { frames: [11, 12, 13], flip: false, loop: true, rate: 1 / 2 }
+        stand_right: { frames: [4], flip: false, loop: false },
+        stand_left: { frames: [4], flip: 'x', loop: false },
+        jump_right: { frames: [5], flip: false, loop: false },
+        jump_left: { frames: [5], flip: 'x', loop: false },
+        punch: { frames: [11], loop: false, rate: 1, trigger: "noPunch" },
+        crouch_right: { frames: [6], flip: false, loop: false },
+        crouch_left: { frames: [6], flip: 'x', loop: false },
+        dying: { frames: [8, 9, 10], flip: false, loop: true, rate: 1 / 6 }
     });
 
     //SPRITE DEL PUÑO DE ALEX
