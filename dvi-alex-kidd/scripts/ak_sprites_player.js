@@ -90,9 +90,9 @@ Quintus.AKSpritesPlayer = function(Q) {
         },
 
         die: function() {
-            Q.state.dec("lives", 1);
             Q.audio.play("die_alex.ogg");
             this.play("dying");
+            Q.state.dec("lives", 1);
             this.p.vy = -65;
         }
 

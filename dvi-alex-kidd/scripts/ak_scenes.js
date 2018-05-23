@@ -12,7 +12,10 @@ Quintus.AKScenes = function(Q) {
     }
 
     Q.scene("die", function(stage) {
-        startGame();
+        if (Q.state.get("lives") === 0) {
+            Q.clearStages();
+            Q.stageScene("endGame", 1, { score: Q.state.get("coins") });
+        } else startGame();
     });
 
     Q.scene("level1", function(stage) {
@@ -258,6 +261,51 @@ Quintus.AKScenes = function(Q) {
         stage.insert(new Q.Map);
         stage.insert(new Q.AlexMap);
         stage.insert(new Q.Arrow);
+    });
+
+    Q.Sprite.extend("endKey", {
+        init: function(p) {
+            this._super(p, {
+                time: 5,
+                cont: 0
+            });
+        },
+        step: function(dt) {
+            this.p.cont += dt;
+            if (this.p.cont > this.p.time) {
+                Q.state.reset({ lives: 3, coins: 0, rings: 0 });
+                Q.clearStages();
+                Q.stageScene("menu");;
+            }
+        }
+    });
+
+    Q.scene('endGame', function(stage) {
+        var container = stage.insert(new Q.UI.Container({
+            x: Q.width / 2,
+            y: Q.height / 2,
+            fill: "black"
+        }));
+        var label1 = container.insert(new Q.UI.Text({
+            x: -20,
+            y: -45,
+            size: 16,
+            color: '#fff',
+            family: 'Alex Kidd in Miracle World',
+            label: "GAME OVER"
+        }));
+        var label2 = container.insert(new Q.UI.Text({
+            x: -20,
+            y: 10,
+            size: 12,
+            color: '#fff',
+            family: 'Alex Kidd in Miracle World',
+            label: ("SCORE: " + stage.options.score)
+        }));
+
+        container.fit(Q.height);
+        Q.audio.play("game_over.ogg")
+        stage.insert(new Q.endKey);
     });
 
     Q.scene("creditos", function(stage) {
