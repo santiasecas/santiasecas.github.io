@@ -9,9 +9,9 @@
 
 Quintus.AKSpritesEnemies = function(Q) {
     /**===========================================================================================
-     * 
+     *
      *                                         BIRD
-     * 
+     *
      ===========================================================================================*/
     Q.Sprite.extend("Bird", {
         init: function(p) {
@@ -43,9 +43,9 @@ Quintus.AKSpritesEnemies = function(Q) {
     });
 
     /**===========================================================================================
-     * 
+     *
      *                                          SCORPION
-     * 
+     *
      ===========================================================================================*/
     Q.Sprite.extend("Scorpion", {
         init: function(p) {
@@ -79,9 +79,9 @@ Quintus.AKSpritesEnemies = function(Q) {
     });
 
     /**===========================================================================================
-     * 
+     *
      *                                         FROG
-     * 
+     *
      ===========================================================================================*/
     Q.Sprite.extend("Frog", {
         init: function(p) {
@@ -170,9 +170,9 @@ Quintus.AKSpritesEnemies = function(Q) {
 
 
     /**===========================================================================================
-     * 
+     *
      *                                          GHOST
-     * 
+     *
      ===========================================================================================*/
     Q.Sprite.extend("Ghost", {
         init: function(p) {
@@ -239,9 +239,104 @@ Quintus.AKSpritesEnemies = function(Q) {
     });
 
     /**===========================================================================================
-     * 
+     *
+     *                                          BOSS
+     *
+     ===========================================================================================*/
+    Q.Sprite.extend("Boss", {
+        init: function(p) {
+            this._super(p, {
+                sheet: 'gooseka',
+                sprite: 'BossAnimation',
+                scale: 1.2,
+                muerto: false,
+                llamado: false
+            });
+        }
+    });
+
+    /**===========================================================================================
+     *
+     *                                 BOSS ELECTION FINAL GAME
+     *
+     ===========================================================================================*/
+
+    Q.Sprite.extend("BossFinalGame", {
+        init: function(p) {
+            this._super(p, {
+                sheet: 'final-game',
+                sprite: 'final-game',
+                gravity: 0,
+                frame: 0,
+                duration: 3,
+                count: 0,
+                end: 5,
+                gana: false,
+            });
+            this.add('2d, platformerControls, animation, tween');
+        },
+        step: function(dt) {
+            if (true) {
+                this.p.y = alex.p.y - 100;
+                this.p.x = alex.p.x + 200;
+            }
+            this.p.count += dt;
+            if (this.p.count > this.p.duration) {
+                // JUEGO PIEDRA, PAPEL o TIJERAS
+                console.log("Alex usa: " + alexHand.p.frame);
+                console.log("Enemigo usa: " + this.p.frame);
+                if (alexHand.p.frame == this.p.frame) {
+                    console.log("empata");
+                    this.destroy();
+                    // De momento al empatar se pierde
+                    Q.clearStages();
+                    Q.stageScene("endGame");
+
+                    //alexHand = this.stage.insert(new Q.AlexFinalGame());
+                    //alexHand.destroy();
+                } else if (alexHand.p.frame == 0 && this.p.frame == 1) {
+                    console.log("gana");
+                    alex.p.boss = false;
+                    this.p.gana = true;
+                } else if (alexHand.p.frame == 2 && this.p.frame == 0) {
+                    console.log("gana");
+                    alex.p.boss = false;
+                    this.p.gana = true;
+                } else if (alexHand.p.frame == 1 && this.p.frame == 2) {
+                    console.log("gana");
+                    alex.p.boss = false;
+                    this.p.gana = true;
+                } else {
+                    sleep(2000);
+                    console.log("pierde");
+                    Q.clearStages();
+                    Q.stageScene("endGame");
+                }
+
+                if (this.p.gana == true) {
+                    this.destroy();
+                    Q.clearStages();
+                    Q.stageScene("creditos");
+
+                    /* PENDIENTE: Ganar al tocar el arroz
+                    //alexHand.destroy();
+                    Q.clearStages();
+                    Q.stageScene("level1");
+                    alexHand.destroy();
+                    alex.p.fin = true;
+                    bossEnemy.destroy();
+                    //this.stage.insert(new Q.Alex({ x: alex.p.x, y: alex.p.y }));*/
+                    //this.stage.insert(new Q.Rice({ x: bossEnemy.p.x - 50, y: bossEnemy.p.y }));
+                }
+            }
+        }
+    });
+
+
+    /**===========================================================================================
+     *
      *                                    DEFAULT ENEMIES
-     * 
+     *
      ============================================================================================*/
     Q.component("defaultEnemy", {
         added: function() {

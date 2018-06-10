@@ -29,9 +29,15 @@ window.addEventListener("load", function() {
         "menu.mp3", "menu.ogg", "map.ogg", "map.mp3", "credits.mp3", "credits.ogg",
         "enemyDie.png", "alexhud.png", "minirock.png", "mountain.png", "star_box.mp3",
         "star_box.ogg", "break_box.ogg", "break_box.mp3", "kill_enemy.mp3", "kill_enemy.ogg",
-        "game_over.mp3", "game_over.ogg", "die_alex.mp3", "die_alex.ogg"
+        "game_over.mp3", "game_over.ogg", "die_alex.mp3", "die_alex.ogg", "gooseka.png",
+        "final-game.png", "final-game-titles.png", "boss_speak.ogg", "boss_speak.mp3",
+        "rock_paper_scissors.ogg", "rock_paper_scissors.mp3",
     ], function() {
         Q.sheet("alex", "alex.png", { tilew: 32, tileh: 48 });
+        Q.sheet("vidaAlex", "alexhud.png", { tilew: 32, tileh: 32 });
+        Q.sheet("gooseka", "gooseka.png", { tilew: 23, tileh: 48 });
+        Q.sheet("final-game", "final-game.png", { tilew: 68, tileh: 64 });
+        Q.sheet("final-game-titles", "final-game-titles.png", { tilew: 137, tileh: 36 });
         Q.sheet("bird", "bird.png", { tilew: 48, tileh: 32 });
         Q.sheet("scorpion", "scorpion.png", { tilew: 32, tileh: 28 });
         Q.sheet("frog", "frog.png", { tilew: 32, tileh: 48 });
@@ -41,13 +47,6 @@ window.addEventListener("load", function() {
         Q.sheet("ghost", "ghost.png", { tilew: 32, tileh: 32 });
         Q.sheet("enemyDie", "enemyDie.png", { tilew: 32, tileh: 32 });
         Q.sheet("logo", "logo.png", { tilew: 800, tileh: 600 });
-        Q.loadTMX("level1.tmx", function() {
-            Q.stageScene("level1");
-            Q.state.reset({ lives: 3, coins: 0, rings: 0 });
-            Q.stageScene("hud", 2);
-            Q.stageScene("lives", 3);
-            Q.stageScene("coins", 4);
-            Q.stageScene("rings", 5);
-        });
+        Q.stageScene("menu");
     });
 });

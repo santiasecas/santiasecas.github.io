@@ -19,20 +19,16 @@ Quintus.AKScenes = function(Q) {
     });
 
     Q.scene("level1", function(stage) {
-        //Q.audio.play('main_theme.ogg',{loop: true});
         Q.stageTMX('level1.tmx', stage);
         stage.insert(new Q.Mountain({ x: 128, y: 3408 }));
         stage.insert(new Q.Mountain({ x: 288, y: 3408 }));
         var alex = stage.insert(new Q.Alex({ x: 100, y: 200 }));
-        //stage.insert(new Q.Mountain({ x: 416, y: 3408 }));
-        //stage.insert(new Q.Scorpion({ x: 250, y: 500 }));
-        //stage.insert(new Q.Frog({ x: 150, y: 200 }));
-        stage.insert(new Q.Question({ x: 464, y: 431, drop: 'ghost' }));
-        stage.insert(new Q.Question({ x: 368, y: 1072, drop: 'ghost' }));
+        stage.insert(new Q.Scorpion({ x: 250, y: 500 }));
+        stage.insert(new Q.Frog({ x: 256, y: 288 }));
+        stage.insert(new Q.Question({ x: 464, y: 431 }));
+        stage.insert(new Q.Question({ x: 368, y: 1072 }));
         stage.insert(new Q.GhostBlock({ x: 240, y: 1616, drop: 'ghost' }));
-        //stage.insert(new Q.StarBlock({ x: 232, y: 200, drop: 'sackLittle' }));
-        //stage.insert(new Q.Rock({ x: 264, y: 200 }));
-        //stage.insert(new Q.Ghost({ x: 160, y: 200 }));
+        stage.insert(new Q.YellowSkull({ x: 48, y: 1328 }));
 
         var birds = [
             [8, 19],
@@ -169,7 +165,7 @@ Quintus.AKScenes = function(Q) {
         for (r in rocks) {
             stage.insert(new Q.Rock(blocksToMap(rocks[r])));
         }
-        stage.insert(new Q.Rice(blocksToMap([13, 107])));
+        //stage.insert(new Q.Rice(blocksToMap([13, 107])));
         stage.add("viewport").follow(alex, { x: false, y: true });
         stage.centerOn(256, 0);
     });
@@ -250,6 +246,7 @@ Quintus.AKScenes = function(Q) {
         },
         step: function(dt) {
             if (Q.inputs['action']) {
+                Q.state.reset({ lives: 3, coins: 0, rings: 0 });
                 startGame();
             }
         }
@@ -273,9 +270,8 @@ Quintus.AKScenes = function(Q) {
         step: function(dt) {
             this.p.cont += dt;
             if (this.p.cont > this.p.time) {
-                Q.state.reset({ lives: 3, coins: 0, rings: 0 });
                 Q.clearStages();
-                Q.stageScene("menu");;
+                Q.stageScene("menu");
             }
         }
     });
@@ -300,7 +296,7 @@ Quintus.AKScenes = function(Q) {
             size: 12,
             color: '#fff',
             family: 'Alex Kidd in Miracle World',
-            label: ("SCORE: " + stage.options.score)
+            label: ("SCORE: " + Q.state.p.coins.toString()),
         }));
 
         container.fit(Q.height);
@@ -344,11 +340,39 @@ Quintus.AKScenes = function(Q) {
         })
     });
 
+    /*Q.scene('bossFinalGame', function(stage) {
+        var container = stage.insert(new Q.UI.Container({
+            x: Q.width / 2,
+            y: Q.height / 2,
+            fill: "transparent"
+        }));
+        var label1 = container.insert(new Q.UI.Text({
+            x: -20,
+            y: -45,
+            size: 16,
+            color: 'transparent',
+            family: 'Alex Kidd in Miracle World',
+            label: "GAME OVER"
+        }));
+
+        //container.fit(100);
+        //Q.audio.play("game_over.ogg")
+        //stage.insert(new Q.endKey);
+    });*/
+
     /*
      ******************************************
      ****************   HUD   *****************
      ******************************************
      */
+
+    function vidas() {
+        var vidas = Q.state.p.lives.toString();
+        while (vidas.length < 2) {
+            vidas = '0' + vidas;
+        }
+        return vidas;
+    }
     //MARCADOR DE VIDAS
     Q.scene('lives', function(stage) {
         var lives = stage.insert(new Q.AlexHud({
@@ -356,10 +380,6 @@ Quintus.AKScenes = function(Q) {
             y: 25,
             scale: 0.7
         }));
-        var vidas = Q.state.p.lives.toString();
-        while (vidas.length < 2) {
-            vidas = '0' + vidas;
-        }
         var lives2 = stage.insert(new Q.UI.Text({
             x: 70,
             y: 25,
@@ -367,10 +387,10 @@ Quintus.AKScenes = function(Q) {
             align: 'left',
             color: '#fff',
             family: 'Alex Kidd in Miracle World',
-            label: vidas
+            label: vidas()
         }));
         Q.state.on("change.lives", this, function(lives) {
-            lives2.p.label = vidas;
+            lives2.p.label = vidas();
         });
     });
 
@@ -402,6 +422,14 @@ Quintus.AKScenes = function(Q) {
         });
     });
 
+    function anillos() {
+        var anillos = Q.state.p.rings.toString();
+        while (anillos.length < 2) {
+            anillos = '0' + anillos;
+        }
+        return anillos;
+    }
+
     //MARCADOR DE ANILLOS
     Q.scene('rings', function(stage) {
         var rings = stage.insert(new Q.Ring({
@@ -409,10 +437,7 @@ Quintus.AKScenes = function(Q) {
             y: 25,
             scale: 0.85
         }));
-        var anillos = Q.state.p.rings.toString();
-        while (anillos.length < 2) {
-            anillos = '0' + anillos;
-        }
+
         var rings2 = stage.insert(new Q.UI.Text({
             x: 420,
             y: 25,
@@ -420,10 +445,10 @@ Quintus.AKScenes = function(Q) {
             align: 'left',
             color: '#fff',
             family: 'Alex Kidd in Miracle World',
-            label: anillos
+            label: anillos()
         }));
         Q.state.on("change.rings", this, function(rings) {
-            rings2.p.label = '\n x ' + rings;
+            rings2.p.label = anillos();
         });
     });
 
@@ -433,12 +458,11 @@ Quintus.AKScenes = function(Q) {
             Q.audio.stop();
             Q.clearStages();
             Q.audio.stop();
-            //Q.audio.play("music_main.ogg", { loop: true });
+            Q.audio.play("main_theme.ogg", { loop: true });
             Q.stageScene("level1");
-            Q.stageScene("hud", 2);
-            Q.stageScene("lives", 3);
-            Q.stageScene("coins", 4);
-            Q.stageScene("rings", 5);
+            Q.stageScene("lives", 2);
+            Q.stageScene("coins", 3);
+            Q.stageScene("rings", 4);
         });
     }
 };

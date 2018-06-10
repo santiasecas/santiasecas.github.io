@@ -7,19 +7,61 @@
  */
 
 Quintus.AKSpritesObjects = function(Q) {
+  /**===========================================================================================
+   *
+   *                                    YELLOWSKULL BLOCK
+   *
+   ===========================================================================================*/
+    Q.Sprite.extend("YellowSkull", {
+        init: function(p) {
+            this._super(p, {
+                sheet: 'escenary',
+                frame: 10,
+                gravity: 0,
+            });
+            this.add("2d, drops, brokeBox");
+
+            this.on("hit.sprite", function(collision) {
+                if (collision.obj.isA("AlexFist")) {
+                    Q.audio.play("star_box.ogg");
+                    Q.stages[0].lists["Alex"][0].paralisis();
+                    this.destroy();
+                }
+            });
+        }
+    });
+
+    /**===========================================================================================
+     *
+     *                                       QUESTION BLOCK
+     *
+     ===========================================================================================*/
     Q.Sprite.extend("Question", {
         init: function(p) {
             this._super(p, {
                 sheet: 'escenary',
                 frame: 9,
                 gravity: 0,
-                dropped: false
+                dropped: false,
+                drop: ""
             });
             this.add("2d, drops, brokeBox");
 
             this.on("hit.sprite", function(collision) {
                 if (collision.obj.isA("AlexFist")) {
-                    this.drop(0);
+                    var numero = Math.floor((Math.random() * 3) + 1);
+
+                    if (numero === 1) {
+                        this.p.drop = "anillo";
+                        this.drop();
+                    } else if (numero === 2) {
+                        this.p.drop = "ghost";
+                        this.drop(0);
+
+                    } else if (numero === 3) {
+                        this.p.drop = "vida";
+                        this.drop();
+                    }
                     Q.audio.play("star_box.ogg");
                     this.destroy();
                 }
@@ -27,6 +69,11 @@ Quintus.AKSpritesObjects = function(Q) {
         }
     });
 
+    /**===========================================================================================
+     *
+     *                                       STAR BLOCK
+     *
+     ===========================================================================================*/
     Q.Sprite.extend("StarBlock", {
         init: function(p) {
             this._super(p, {
@@ -52,6 +99,11 @@ Quintus.AKSpritesObjects = function(Q) {
         }
     });
 
+    /**===========================================================================================
+     *
+     *                                          GHOST BLOCK
+     *
+     ===========================================================================================*/
     Q.Sprite.extend("GhostBlock", {
         init: function(p) {
             this._super(p, {
@@ -70,6 +122,11 @@ Quintus.AKSpritesObjects = function(Q) {
         }
     });
 
+    /**===========================================================================================
+     *
+     *                                        ROCK BLOCK
+     *
+     ===========================================================================================*/
     Q.Sprite.extend("Rock", {
         init: function(p) {
             this._super(p, {
@@ -105,6 +162,11 @@ Quintus.AKSpritesObjects = function(Q) {
         }
     });
 
+    /**===========================================================================================
+     *
+     *                                         SACK LITTLE
+     *
+     ===========================================================================================*/
     Q.Sprite.extend("SackLittle", {
         init: function(p) {
             this._super(p, {
@@ -126,6 +188,11 @@ Quintus.AKSpritesObjects = function(Q) {
         }
     });
 
+    /**===========================================================================================
+     *
+     *                                         SACK BIG
+     *
+     ===========================================================================================*/
     Q.Sprite.extend("SackBig", {
         init: function(p) {
             this._super(p, {
@@ -152,6 +219,9 @@ Quintus.AKSpritesObjects = function(Q) {
             drop: function(offsetY) {
                 if (!this.p.dropped) {
                     this.p.dropped = true;
+                    console.log("Vamos a generar un " + this.p.drop);
+                    if (this.p.drop === 'anillo') this.stage.insert(new Q.Ring({ x: this.p.x, y: this.p.y }));
+                    if (this.p.drop === 'vida') this.stage.insert(new Q.Vida({ x: this.p.x, y: this.p.y }));
                     if (this.p.drop === 'sackLittle') this.stage.insert(new Q.SackLittle({ x: this.p.x, y: this.p.y }));
                     if (this.p.drop === 'sackBig') this.stage.insert(new Q.SackBig({ x: this.p.x, y: this.p.y }));
                     if (this.p.drop === 'ghost') this.stage.insert(new Q.Ghost({ x: this.p.x, y: this.p.y + offsetY }));
@@ -160,6 +230,11 @@ Quintus.AKSpritesObjects = function(Q) {
         }
     })
 
+    /**===========================================================================================
+     *
+     *                                          ARROW
+     *
+     ===========================================================================================*/
     Q.Sprite.extend("Arrow", {
         init: function(p) {
             this._super(p, {
@@ -178,6 +253,11 @@ Quintus.AKSpritesObjects = function(Q) {
         point: { frames: [0, 1], rate: 1 / 2 }
     });
 
+    /**===========================================================================================
+     *
+     *                                          LOGO
+     *
+     ===========================================================================================*/
     Q.Sprite.extend("Logo", {
         init: function(p) {
             this._super(p, {
@@ -197,6 +277,11 @@ Quintus.AKSpritesObjects = function(Q) {
         light: { frames: [0, 1], rate: 1 / 8 }
     });
 
+    /**===========================================================================================
+     *
+     *                                          RICE
+     *
+     ===========================================================================================*/
     Q.Sprite.extend("Rice", {
         init: function(p) {
             this._super(p, {
@@ -209,6 +294,8 @@ Quintus.AKSpritesObjects = function(Q) {
             });
             this.on("hit.sprite", function(collision) {
                 if (collision.obj.isA("Alex")) {
+                    this.del('platformerControls');
+                    this.destroy();
                     Q.clearStages();
                     Q.stageScene("creditos");
                 }
@@ -216,6 +303,11 @@ Quintus.AKSpritesObjects = function(Q) {
         }
     });
 
+    /**===========================================================================================
+     *
+     *                                  SMOKE WHEN AN ENEMY DIE
+     *
+     ===========================================================================================*/
     Q.Sprite.extend("SmokeEnemyDie", {
         init: function(p) {
             this._super(p, {
@@ -238,6 +330,11 @@ Quintus.AKSpritesObjects = function(Q) {
         die: { frames: [0, 1], rate: 1 / 2, loop: false, trigger: "destroy" }
     });
 
+    /**===========================================================================================
+     *
+     *                                        ALEX HUD
+     *
+     ===========================================================================================*/
     Q.Sprite.extend("AlexHud", {
         init: function(p) {
             this._super(p, {
@@ -246,6 +343,11 @@ Quintus.AKSpritesObjects = function(Q) {
         }
     });
 
+    /**===========================================================================================
+     *
+     *                                        MINI ROCK
+     *
+     ===========================================================================================*/
     Q.Sprite.extend("MiniRockLeft", {
         init: function(p) {
             this._super(p, {
@@ -276,15 +378,62 @@ Quintus.AKSpritesObjects = function(Q) {
         }
     });
 
+    /**===========================================================================================
+     *
+     *                                          RING
+     *
+     ===========================================================================================*/
     Q.Sprite.extend("Ring", {
         init: function(p) {
             this._super(p, {
                 sheet: 'escenary',
-                frame: 13
+                frame: 13,
+                sensor: true,
+                gravity: 0,
+                taken: false
+            });
+            this.add("2d");
+            this.on("hit.sprite", function(collision) {
+                if (collision.obj.isA("Alex") && !this.p.taken) {
+                    this.p.taken = true;
+                    Q.audio.play("coin.ogg");
+                    Q.state.inc("rings", 1);
+                    this.destroy();
+                };
             });
         }
     });
 
+    /**===========================================================================================
+     *
+     *                                          LIFE
+     *
+     ===========================================================================================*/
+    Q.Sprite.extend("Vida", {
+        init: function(p) {
+            this._super(p, {
+                sheet: 'vidaAlex',
+                sensor: true,
+                gravity: 0,
+                taken: false
+            });
+            this.add("2d");
+            this.on("hit.sprite", function(collision) {
+                if (collision.obj.isA("Alex") && !this.p.taken) {
+                    this.p.taken = true;
+                    Q.audio.play("coin.ogg");
+                    Q.state.inc("lives", 1);
+                    this.destroy();
+                };
+            });
+        }
+    });
+
+    /**===========================================================================================
+     *
+     *                                        MOUNTAIN BACKGROUND
+     *
+     ===========================================================================================*/
     Q.Sprite.extend("Mountain", {
         init: function(p) {
             this._super(p, {
@@ -294,5 +443,22 @@ Quintus.AKSpritesObjects = function(Q) {
                 collisionMask: ''
             });
         }
+    });
+
+    /**===========================================================================================
+     *
+     *                                       TITLE FINAL GAME
+     *
+     ===========================================================================================*/
+    Q.Sprite.extend("TitleFinalGame", {
+        init: function(p) {
+                this._super(p, {
+                    sheet: 'final-game-titles',
+                    sprite: 'TitleFinalGameAnimation',
+                    scale: 3.0,
+                    count: 0,
+                    frame: 0
+                });
+            }
     });
 }
